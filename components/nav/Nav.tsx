@@ -11,10 +11,16 @@ export function Nav() {
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-base/80 backdrop-blur">
       <nav className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
-        <Link href="/" className="font-mono text-sm tracking-tight">
-          <span className="text-accent">[</span>
-          <span className="px-1.5 text-fg">codemantix</span>
-          <span className="text-accent">]</span>
+        <Link href="/" className="flex items-center gap-2.5">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/logomark.png"
+            alt="Codemantix"
+            className="h-7 w-7 object-contain"
+          />
+          <span className="font-mono text-sm tracking-tight text-fg">
+            codemantix
+          </span>
         </Link>
         <ul className="flex items-center gap-6 font-mono text-xs tracking-[0.14em] text-muted uppercase">
           {links.map((l) => (
