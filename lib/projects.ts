@@ -11,7 +11,14 @@ export type ProjectStatus = "live" | "in-arbeit" | "archiviert";
 
 export type ProjectLink = { label: string; url: string };
 
-export type ProjectSection = { title: string; body: string[] };
+export type ProjectImage = { src: string; alt: string; caption?: string };
+
+export type ProjectSection = {
+  title: string;
+  body: string[];
+  /** Optionales Bild unter dem Abschnittstext. */
+  image?: ProjectImage;
+};
 
 export type Project = {
   slug: string;
@@ -61,6 +68,11 @@ const projects: Project[] = [
           "Drohnenvideos verdienen mehr als eine Galerie-Kachel. Cloudframe stellt das visuelle Erlebnis in den Vordergrund: hochwertig, filmisch, mit einer eigenen Sucher-/HUD-Bildsprache statt Baukasten-Look.",
           "Die ganze Seite folgt einem Motiv — dem Blick durch die Kamera: Fadenkreuze, Fokus-Eckwinkel, ein REC-Overlay mit laufendem Timecode.",
         ],
+        image: {
+          src: "/projects/cloudframe-reschensee.jpg",
+          alt: "Drohnenaufnahme des Kirchturms im Reschensee",
+          caption: "Reschensee, Südtirol — eine der Locations auf der Karte.",
+        },
       },
       {
         title: "Vier Views statt Unterseiten",
@@ -75,6 +87,11 @@ const projects: Project[] = [
           "Herzstück ist eine mit D3.js gebaute Karte: Mausrad-Zoom, weiches Fly-to beim Pin-Klick, acht Locations mit Inline-Galerien.",
           "Ein Live-Geo-HUD zeigt die echten Koordinaten unter dem Cursor, ein Ziel-Fadenkreuz folgt der Maus — die Idee kam beim Bauen besonders gut an.",
         ],
+        image: {
+          src: "/projects/cloudframe-rhodos.jpg",
+          alt: "Drohnenaufnahme einer Bucht auf Rhodos",
+          caption: "Rhodos — Top-Down über der Bucht.",
+        },
       },
       {
         title: "Technik",

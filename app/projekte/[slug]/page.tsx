@@ -119,6 +119,21 @@ export default async function ProjectDetail({
                 {para}
               </p>
             ))}
+            {section.image && (
+              <figure className="mt-6 overflow-hidden rounded-sm border border-line">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={section.image.src}
+                  alt={section.image.alt}
+                  className="aspect-[16/9] w-full object-cover"
+                />
+                {section.image.caption && (
+                  <figcaption className="border-t border-line bg-surface px-4 py-2 font-mono text-xs text-faint">
+                    {section.image.caption}
+                  </figcaption>
+                )}
+              </figure>
+            )}
           </section>
         ))}
 
