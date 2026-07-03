@@ -1,26 +1,78 @@
 @import "tailwindcss";
 
+/* Codemantix Design-System (Strang F2) — umgesetzt aus der Vault-Notiz
+   "Codemantix Hub – Design-Spec (H0)": Dark-Mode-Default, Akzent Indigo,
+   Klammer-Motiv `[ ]`, Grotesk + Mono-Meta. */
+@theme {
+  /* Palette (H0, verbindlich) */
+  --color-base: #0a0c10; /* Grund. Hinweis: `text-base` kollidiert mit der font-size-Utility
+                            — für Textfarbe #0a0c10 direkt bzw. per Variable nutzen. */
+  --color-surface: #14181f;
+  --color-surface-2: #191e27;
+  --color-line: #222834;
+  --color-line-2: #2e3644;
+  --color-fg: #e7eaf0;
+  --color-muted: #8b94a3;
+  --color-faint: #5a6373;
+  --color-accent: #6d7cff;
+  --color-accent-d: #4a57d6;
+
+  /* Typografie (F2-Feinwahl: Space Grotesk + JetBrains Mono via next/font) */
+  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-base);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  line-height: 1.55;
+  /* feines Punktraster (H0) — bewusst sehr dezent als ruhiger Hintergrund */
+  background-image: radial-gradient(circle, rgba(46, 54, 68, 0.4) 1px, transparent 1px);
+  background-size: 26px 26px;
+  background-position: -13px -13px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-base);
+}
+
+/* Blinkender Cursor am Claim (H0-Motion) */
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+.blink-cursor {
+  animation: blink 1.1s step-end infinite;
+}
+
+/* Immer reduced-motion-fest (H0) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { Nav } from "../components/nav/Nav";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const sans = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const mono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Codemantix Hub",
-  description: "Portfolio & Devlog von Codemantix – in Arbeit.",
+  title: "Codemantix — Portfolio",
+  description: "Codemantix — Portfolio & Projekte von Jonas: Web, Games, 3D.",
 };
 
 export default function RootLayout({
@@ -23,8 +26,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">{children}</body>
+    <html
+      lang="de"
+      className={`${sans.variable} ${mono.variable} h-full antialiased`}
+    >
+      <body className="flex min-h-full flex-col">
+        <Nav />
+        <div className="flex flex-1 flex-col">{children}</div>
+      </body>
     </html>
   );
 }
