@@ -3,7 +3,7 @@ import { getProjects } from "@/lib/projects";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 
 export const metadata: Metadata = {
-  title: "Projekte — Codemantix",
+  title: "Projekte",
   description: "Ausgewählte Projekte von Codemantix: Web, Games, 3D.",
 };
 

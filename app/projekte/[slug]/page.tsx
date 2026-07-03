@@ -19,10 +19,21 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const project = getProject(slug);
-  if (!project) return { title: "Projekt nicht gefunden — Codemantix" };
+  if (!project) return { title: "Projekt nicht gefunden" };
   return {
-    title: `${project.titel} — Codemantix`,
+    title: project.titel,
     description: project.tagline,
+    openGraph: {
+      title: `${project.titel} — Codemantix`,
+      description: project.tagline,
+      images: [{ url: project.cover, alt: project.titel }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${project.titel} — Codemantix`,
+      description: project.tagline,
+      images: [project.cover],
+    },
   };
 }
 
