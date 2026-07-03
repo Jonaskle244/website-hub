@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   // Deploy-Weiche (F1): Default = Static Export für Cloudflare Pages.
   // In M2 leicht umschaltbar auf Vercel/SSR (diese Zeile entfernen bzw. anpassen).
   output: "export",
+  // Saubere Ordner-URLs (`/projekte/cloudframe/index.html`) — portabel auf jedem
+  // statischen Host und in der lokalen Vorschau.
+  trailingSlash: true,
   // Beim Static Export ist die Next.js Image Optimization nicht verfügbar.
   images: {
     unoptimized: true,

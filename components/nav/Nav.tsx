@@ -1,14 +1,11 @@
 import Link from "next/link";
 
-const links = [
-  { href: "/ueber-mich", label: "über mich" },
-  { href: "/projekte", label: "projekte" },
-  { href: "/kontakt", label: "kontakt" },
-];
+const links = [{ href: "/projekte", label: "projekte" }];
 
 /**
  * Nav-Shell (Strang F2) — Klammer-Wortmarke `[ codemantix ]` in Mono,
- * Nav-Links als Mono-Meta. Die Seiten selbst folgen in Strang C.
+ * Nav-Links als Mono-Meta. Projektfokus: keine Über-mich-/Kontakt-Seite
+ * (mit Jonas entschieden 2026-07-03); Kontakt = E-Mail im Footer.
  */
 export function Nav() {
   return (
