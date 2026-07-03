@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Lokale Design-Referenz-Screenshots (nicht committen)
+/design-shots/
