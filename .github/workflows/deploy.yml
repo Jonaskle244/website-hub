@@ -1,0 +1,37 @@
+name: Deploy to Cloudflare Pages
+
+# Auto-Deploy bei jedem Push auf main (+ manuell auslösbar).
+# Baut den statischen Export (output: "export" -> out/) und lädt ihn ins
+# bestehende Pages-Projekt "codemantix" hoch (Direct-Upload via Wrangler).
+# Bewusst NICHT Cloudflares Git-Integration: die zwingt Next.js in den
+# OpenNext/Workers-Build, der bei Static Export failt.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Deploy nach Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy out --project-name=codemantix --branch=main
