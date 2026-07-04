@@ -27,7 +27,7 @@ export default function ProjektePage() {
         Projekte, die ich von der Idee bis zum Deploy selbst gebaut habe.
       </p>
 
-      <div className="mt-14 grid gap-6 sm:grid-cols-2">
+      <div data-reveal className="reveal mt-14 grid gap-6 sm:grid-cols-2">
         {projects.map((project) => (
           <ProjectCard key={project.slug} project={project} />
         ))}

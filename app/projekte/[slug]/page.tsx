@@ -106,7 +106,10 @@ export default async function ProjectDetail({
       </header>
 
       {/* Cover */}
-      <div className="mt-10 overflow-hidden rounded-sm border border-line bg-base">
+      <div
+        data-reveal
+        className="reveal mt-10 overflow-hidden rounded-sm border border-line bg-base"
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={project.cover}
@@ -120,7 +123,7 @@ export default async function ProjectDetail({
         <p className="text-lg leading-[1.6] text-fg">{project.intro}</p>
 
         {project.sections.map((section, i) => (
-          <section key={section.title} className="mt-12">
+          <section key={section.title} data-reveal className="reveal mt-12">
             <h2 className="mb-4 font-mono text-sm tracking-[0.1em] text-accent uppercase">
               <span className="text-faint">{`0${i + 1} · `}</span>
               {section.title}
@@ -148,7 +151,7 @@ export default async function ProjectDetail({
           </section>
         ))}
 
-        <div className="mt-12 border-t border-line pt-8">
+        <div data-reveal className="reveal mt-12 border-t border-line pt-8">
           <p className="mb-2 font-mono text-xs tracking-[0.14em] text-muted uppercase">
             <span className="text-accent">[</span> ergebnis{" "}
             <span className="text-accent">]</span>

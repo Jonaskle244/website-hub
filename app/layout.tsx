@@ -3,6 +3,8 @@ import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Nav } from "../components/nav/Nav";
 import { Footer } from "../components/Footer";
+import { GridParallax } from "../components/motion/GridParallax";
+import { Reveals } from "../components/motion/Reveals";
 
 const sans = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -54,9 +56,21 @@ export default function RootLayout({
   return (
     <html
       lang="de"
+      // Das `has-js`-Script unten mutiert documentElement vor der Hydration —
+      // daher bewusst die className-Diff-Warnung auf <html> unterdrücken.
+      suppressHydrationWarning
       className={`${sans.variable} ${mono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        {/* Motion-States (Entrance/Reveals) sind unter `.has-js` gated — vor
+            dem ersten Paint setzen, damit ohne JS nichts versteckt bleibt. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "document.documentElement.classList.add('has-js')",
+          }}
+        />
+        <GridParallax />
+        <Reveals />
         <Nav />
         <div className="flex flex-1 flex-col">{children}</div>
         <Footer />
