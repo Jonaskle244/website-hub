@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getFeaturedProjects } from "@/lib/projects";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { DecodeText } from "@/components/motion/DecodeText";
+import { HeroPanel } from "@/components/motion/HeroPanel";
 
 /**
  * Home / Landing (Strang C1). Projektfokussiertes Dach — keine Über-mich-/Kontakt-Seite
@@ -28,41 +29,42 @@ export default function Home() {
 
   return (
     <main className="mx-auto w-full max-w-5xl px-6">
-      {/* Hero — Effekt 01 (Entrance) + 02a (Klammern fahren ein) + 03 (Decode) */}
-      <section className="flex min-h-[60vh] items-stretch gap-4 py-24 sm:gap-8">
-        <div
-          aria-hidden="true"
-          className="h-brk h-brk-l hidden w-4 flex-none self-stretch border-2 border-r-0 border-accent sm:block sm:w-5"
-        />
+      {/* Hero — Effekt 01 (Entrance) + 02a (Klammern) + 03 (Decode) + HUD-Panel */}
+      <section className="grid min-h-[60vh] items-center gap-12 py-24 lg:grid-cols-[1fr_340px] lg:gap-16">
+        <div className="flex items-stretch gap-4 sm:gap-8">
+          <div
+            aria-hidden="true"
+            className="h-brk h-brk-l hidden w-4 flex-none self-stretch border-2 border-r-0 border-accent sm:block sm:w-5"
+          />
 
-        <div className="flex min-w-0 flex-1 flex-col justify-center">
-          <p className="h-anim h-eyebrow mb-6 font-mono text-xs tracking-[0.28em] text-accent uppercase">
-            [ <DecodeText text="CODEMANTIX" /> ]
-          </p>
+          <div className="flex min-w-0 flex-1 flex-col justify-center">
+            <p className="h-anim h-eyebrow mb-6 font-mono text-xs tracking-[0.28em] text-accent uppercase">
+              [ <DecodeText text="CODEMANTIX" /> ]
+            </p>
 
-          <h1 className="h-anim h-title max-w-3xl text-5xl leading-[1.02] font-semibold tracking-[-0.03em] text-fg sm:text-6xl">
-            Code als Klammer über alles Digitale
-          </h1>
+            <h1 className="h-anim h-title max-w-3xl text-5xl leading-[1.02] font-semibold tracking-[-0.03em] text-fg sm:text-6xl">
+              Code als Klammer über alles Digitale
+            </h1>
 
-          <p className="h-anim h-sub mt-6 max-w-xl text-lg leading-[1.5] text-muted">
-            Ich entwerfe und baue Software, Games und Web — von der Idee bis zum
-            Deploy.
-          </p>
+            <p className="h-anim h-sub mt-6 max-w-xl text-lg leading-[1.5] text-muted">
+              Ich entwerfe und baue Software, Games und Web — von der Idee bis
+              zum Deploy.
+            </p>
 
-          <div className="h-anim h-cta mt-10">
-            <Link
-              href="/projekte"
-              className="inline-block rounded-sm bg-accent px-5 py-2.5 font-mono text-sm text-[#0a0c10] transition-[transform,filter] duration-300 hover:-translate-y-0.5 hover:brightness-110"
-            >
-              [ projekte ansehen ]
-            </Link>
+            <div className="h-anim h-cta mt-10">
+              <Link
+                href="/projekte"
+                className="inline-block rounded-sm bg-accent px-5 py-2.5 font-mono text-sm text-[#0a0c10] transition-[transform,filter] duration-300 hover:-translate-y-0.5 hover:brightness-110"
+              >
+                [ projekte ansehen ]
+              </Link>
+            </div>
           </div>
         </div>
 
-        <div
-          aria-hidden="true"
-          className="h-brk h-brk-r hidden w-4 flex-none self-stretch border-2 border-l-0 border-accent sm:block sm:w-5"
-        />
+        <div className="h-anim h-panel hidden lg:block">
+          <HeroPanel />
+        </div>
       </section>
 
       {/* Ausgewählte Projekte */}
