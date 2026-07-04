@@ -89,18 +89,45 @@ export default async function ProjectDetail({
         </div>
 
         {project.links.length > 0 && (
-          <div className="mt-8 flex flex-wrap gap-4">
-            {project.links.map((link) => (
-              <a
-                key={link.url}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-sm border border-line-2 px-4 py-2 font-mono text-xs text-fg transition-colors hover:border-accent hover:text-accent"
-              >
-                [ {link.label} ↗ ]
-              </a>
-            ))}
+          <div className="mt-8">
+            <p className="mb-2 font-mono text-xs text-faint uppercase">
+              Website
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {project.links.map((link, i) =>
+                i === 0 ? (
+                  // Primärer Link = gefüllter CTA (wie der Hero-Button) —
+                  // eindeutig als „hier geht's zur Seite" lesbar.
+                  <a
+                    key={link.url}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-2.5 rounded-sm bg-accent px-5 py-2.5 font-mono text-sm text-[#0a0c10] transition-[transform,filter] duration-300 hover:-translate-y-0.5 hover:brightness-110"
+                  >
+                    <span>Website ansehen</span>
+                    <span className="text-faint">·</span>
+                    <span className="opacity-80">{link.label}</span>
+                    <span
+                      aria-hidden="true"
+                      className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    >
+                      ↗
+                    </span>
+                  </a>
+                ) : (
+                  <a
+                    key={link.url}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center rounded-sm border border-line-2 px-4 py-2.5 font-mono text-sm text-fg transition-colors hover:border-accent hover:text-accent"
+                  >
+                    {link.label} ↗
+                  </a>
+                ),
+              )}
+            </div>
           </div>
         )}
       </header>
