@@ -56,7 +56,12 @@ const projects: Project[] = [
     status: "in-arbeit",
     stack: ["Astro", "TypeScript", "D3.js", "Three.js", "Sharp"],
     cover: "/projects/cloudframe-cover.png",
-    links: [],
+    links: [
+      {
+        label: "cloudframe.codemantix.com",
+        url: "https://cloudframe.codemantix.com",
+      },
+    ],
     featured: true,
     order: 1,
     intro:
@@ -103,6 +108,68 @@ const projects: Project[] = [
     ],
     ergebnis:
       "Eine Seite mit eigener Handschrift — filmisch, technisch, gebaut statt zusammengeklickt. Aktuell im Feinschliff vor dem Launch.",
+  },
+  {
+    slug: "sonnensystem",
+    titel: "Sonnensystem 3D",
+    tagline: "Interaktives 3D-Modell des Sonnensystems im Browser.",
+    rolle: "Konzept · Design · Entwicklung",
+    jahr: "2026",
+    status: "live",
+    stack: ["React 19", "TypeScript", "Three.js", "R3F", "Vite"],
+    cover: "/projects/sonnensystem-cover.jpg",
+    links: [
+      {
+        label: "solarsystem.codemantix.com",
+        url: "https://solarsystem.codemantix.com",
+      },
+    ],
+    featured: true,
+    order: 2,
+    intro:
+      "Sonnensystem 3D ist ein interaktives Modell unseres Sonnensystems im Browser — Sonne, alle acht Planeten und ihre wichtigsten Monde, frei erkundbar. Kein Lehrbuch-Diagramm, sondern eine echte 3D-Szene, die man anfliegen, durchsuchen und in der Zeit vor- und zurückdrehen kann.",
+    sections: [
+      {
+        title: "Die Idee",
+        body: [
+          "Die meisten Sonnensystem-Visualisierungen sind entweder hübsch-aber-erfunden oder korrekt-aber-hässlich. Ich wollte beides: astronomisch plausibel und trotzdem schön anzusehen.",
+          "Sonne, 8 Planeten und 18 Monde stehen als texturierte Kugeln in der Szene — für vier kleine Monde wie Phobos und Deimos sogar als echte NASA-3D-Modelle.",
+        ],
+        image: {
+          src: "/projects/sonnensystem-system.jpg",
+          alt: "Gesamtansicht des 3D-Sonnensystems mit Planetenbahnen",
+          caption: "Das ganze System auf einen Blick — echte Bahnen, kein Kreis-Diagramm.",
+        },
+      },
+      {
+        title: "Astronomisch echt",
+        body: [
+          "Die Planeten laufen nicht auf fiktiven Kreisen, sondern auf echten J2000-Keplerbahnen. Über die Zeitsteuerung dreht man das ganze System vor und zurück — von Echtzeit bis 30 Tage pro Sekunde, mit einem Klick zurück auf Heute.",
+          "Die Erde bekommt eine Tag-/Nacht-Seite mit Wolken und Atmosphäre, Saturn seine Ringe, die Sonne einen eigenen Shader.",
+        ],
+        image: {
+          src: "/projects/sonnensystem-saturn.jpg",
+          alt: "Saturn mit Ringen im 3D-Sonnensystem",
+          caption: "Saturn mit Ringsystem — die Kamera folgt jedem gewählten Körper.",
+        },
+      },
+      {
+        title: "Erkunden statt Klicken",
+        body: [
+          "Eine Fokus-Kamera folgt jedem gewählten Himmelskörper weich. Ein Suchfeld filtert alle 24 Körper inklusive Monde, die Pfeiltasten schalten durch — und ein „Reise\"-Modus fährt automatisch durch das System.",
+          "Jeder Zustand — Körper, Fokus, Ansicht, Datum — steht in der URL. Eine bestimmte Ansicht ist damit einfach teilbar.",
+        ],
+      },
+      {
+        title: "Technik",
+        body: [
+          "Gebaut mit React 19 und TypeScript auf react-three-fiber (Three.js), Vite als Build und Tailwind fürs UI. Deployment auf Vercel unter eigener Subdomain, DNS über Cloudflare.",
+          "Dazu ein heller und dunkler Modus, ein Info-Panel mit maßstäblichem Größenvergleich zur Erde und versionierte Release-Notes.",
+        ],
+      },
+    ],
+    ergebnis:
+      "Seit Juli 2026 live unter solarsystem.codemantix.com — die Kern-Feature-Runde ist abgeschlossen und abgenommen. Als Nächstes: Asset-Pipeline und Code-Splitting für schnellere Ladezeiten.",
   },
 ];
 
