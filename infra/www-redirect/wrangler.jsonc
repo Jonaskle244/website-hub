@@ -1,0 +1,9 @@
+{
+  "name": "codemantix-www-redirect",
+  "main": "index.mjs",
+  "compatibility_date": "2026-09-20",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "www.codemantix.com/*", "zone_name": "codemantix.com" }],
+  "observability": { "enabled": false },
+}

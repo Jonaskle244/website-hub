@@ -1,22 +1,20 @@
 import Link from "next/link";
 
-const links = [{ href: "/projekte", label: "projekte" }];
+const links = [
+  { href: "/projekte/", label: "Projekte" },
+  { href: "/#leistungen", label: "Leistungen" },
+];
 
 /**
  * Nav-Shell (Strang F2 + Motion-Konzept Effekt 02b). Logo = animiertes
  * `[c]`-SVG-Mark (Klammern ploppen beim Laden, das C zeichnet sich, Hover
- * spreizt die Klammern) + Mono-Wortmarke. Projektfokus: keine Über-mich-/
- * Kontakt-Seite; Kontakt = E-Mail im Footer.
+ * spreizt die Klammern) + Mono-Wortmarke. Leistungen und Kontakt liegen auf Home.
  */
 export function Nav() {
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-base/70 backdrop-blur">
-      <nav className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
-        <Link
-          href="/"
-          className="logo flex items-center gap-3.5"
-          aria-label="Codemantix"
-        >
+    <header className="border-line bg-base/70 sticky top-0 z-50 border-b backdrop-blur">
+      <nav className="mx-auto flex min-h-16 max-w-5xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-6 py-3">
+        <Link href="/" className="logo flex items-center gap-3.5" aria-label="Codemantix">
           <svg
             className="logo-mark block h-[26px] w-[26px]"
             viewBox="0 0 100 100"
@@ -52,18 +50,32 @@ export function Nav() {
               strokeLinejoin="miter"
             />
           </svg>
-          <span className="font-mono text-[15px] font-medium tracking-[0.3em] text-accent">
+          <span className="text-accent font-mono text-xs font-medium tracking-[0.2em] sm:text-[15px] sm:tracking-[0.3em]">
             CODEMANTIX
           </span>
         </Link>
-        <ul className="flex items-center gap-6 font-mono text-xs tracking-[0.14em] text-muted uppercase">
+        <ul className="text-muted flex items-center gap-4 font-mono text-xs tracking-[0.04em] uppercase sm:gap-6">
           {links.map((l) => (
             <li key={l.href}>
-              <Link href={l.href} className="transition-colors hover:text-fg">
+              <a
+                href={l.href}
+                className="hover:text-fg inline-flex min-h-10 items-center transition-colors"
+              >
                 {l.label}
-              </Link>
+              </a>
             </li>
           ))}
+          <li>
+            {/* Native navigation avoids duplicated hash fragments in the static App Router. */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+            <a
+              href="/#kontakt"
+              className="border-accent/50 text-accent hover:bg-accent inline-flex min-h-10 items-center rounded-sm border px-3 transition-colors hover:text-[#0a0c10]"
+            >
+              <span className="sm:hidden">Anfragen</span>
+              <span className="hidden sm:inline">Projekt anfragen</span>
+            </a>
+          </li>
         </ul>
       </nav>
     </header>

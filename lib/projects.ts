@@ -53,7 +53,7 @@ const projects: Project[] = [
     tagline: "Drohnen-Portfolio als filmisches Sucher-Erlebnis.",
     rolle: "Konzept · Design · Entwicklung",
     jahr: "2026",
-    status: "in-arbeit",
+    status: "live",
     stack: ["Astro", "TypeScript", "D3.js", "Three.js", "Sharp"],
     cover: "/projects/cloudframe-cover.png",
     links: [
@@ -83,7 +83,7 @@ const projects: Project[] = [
         title: "Vier Views statt Unterseiten",
         body: [
           "Statt klassischer Menüpunkte schaltet man zwischen vier app-artigen Views um: Start (Hero mit Scroll-Scrubbing), Karte, Filme und Hardware.",
-          "Die Hardware-View ersetzt bewusst eine „Über mich\"-Seite — statt Persönlichem ein interaktives Datenblatt der DJI Mini 4 Pro mit nummerierten Bauteil-Hotspots.",
+          'Die Hardware-View ersetzt bewusst eine „Über mich"-Seite — statt Persönlichem ein interaktives Datenblatt der DJI Mini 4 Pro mit nummerierten Bauteil-Hotspots.',
         ],
       },
       {
@@ -107,7 +107,59 @@ const projects: Project[] = [
       },
     ],
     ergebnis:
-      "Eine Seite mit eigener Handschrift — filmisch, technisch, gebaut statt zusammengeklickt. Aktuell im Feinschliff vor dem Launch.",
+      "Seit Juli 2026 live: ein eigener Auftritt für meine Drohnenaufnahmen mit interaktiver Karte, Filmen und Galerien. Gestaltung und Entwicklung stammen von mir; die Seite wird bei Bedarf weiterentwickelt.",
+  },
+  {
+    slug: "kinokanon",
+    titel: "Kinokanon",
+    tagline: "Filme vergleichen, eigene Rankings erstellen und den passenden Charakter entdecken.",
+    rolle: "Eigenes Projekt · Konzept · Design · Entwicklung",
+    jahr: "2026",
+    status: "live",
+    stack: ["Astro", "TypeScript", "React", "Cloudflare"],
+    cover: "/projects/kinokanon-cover.png",
+    links: [{ label: "kinokanon.codemantix.com", url: "https://kinokanon.codemantix.com/de/" }],
+    featured: true,
+    order: 2,
+    intro:
+      "Kinokanon ist mein eigenes Filmprojekt: eine Website, auf der Besucher Filme vergleichen, ein persönliches Ranking erstellen und ihr Ergebnis teilen können. Dazu kommen Filmreihenfolgen und Charakterquizze – auf Deutsch und Englisch.",
+    sections: [
+      {
+        title: "Die Idee",
+        body: [
+          "Über Lieblingsfilme lässt sich lange reden. Kinokanon macht daraus etwas zum Ausprobieren: Du entscheidest zwischen zwei Filmen, die Anwendung baut daraus deine persönliche Reihenfolge.",
+          "Mein Ziel war eine Website, die redaktionelle Inhalte mit einer einfach bedienbaren Anwendung verbindet. Gestaltung, Inhalte und Entwicklung liegen bei mir; Kinokanon ist kein Kundenauftrag.",
+        ],
+      },
+      {
+        title: "Vom Vergleich zum eigenen Ranking",
+        body: [
+          "Statt eine lange Liste von Hand zu sortieren, vergleichst du Filme paarweise. Ein Zwischenstand im Browser hilft dabei, das Ranking fortzusetzen.",
+          "Das Ergebnis lässt sich als Link teilen. So wird aus einer persönlichen Auswahl eine Einladung, selbst zu sortieren.",
+        ],
+      },
+      {
+        title: "Zwei Sprachen, mehrere Einstiege",
+        body: [
+          "Die Website ist auf Deutsch und Englisch verfügbar. Neben dem Ranking gibt es Orientierung zu Filmreihenfolgen und eigene Charakterquizze für Marvel und Star Wars.",
+          "Die Quizze haben jeweils eigene Fragen und Ergebnisse. Antworten bleiben beim Sprachwechsel erhalten, damit Besucher nicht von vorn beginnen müssen.",
+        ],
+        image: {
+          src: "/projects/kinokanon-quiz.png",
+          alt: "Star-Wars-Charakterquiz auf Kinokanon",
+          caption: "Echte Website-Ansicht: das eigenständige Star-Wars-Quiz.",
+        },
+      },
+      {
+        title: "Gestaltung und Umsetzung",
+        body: [
+          "Klare Typografie, dunkle Flächen und rote Akzente geben der Seite eine eigene visuelle Identität. Der Einstieg führt direkt zur Interaktion; weiterführende Filminformationen bleiben erreichbar.",
+          "Astro und TypeScript bilden die Grundlage, React trägt die Ranking-Interaktion. Die Veröffentlichung läuft über Cloudflare. Statische Inhalte und dynamische Funktionen werden passend zu ihrem Zweck kombiniert.",
+        ],
+      },
+    ],
+    ergebnis:
+      "Seit September 2026 live: eine zweisprachige Film-Website mit interaktiven Rankings, teilbaren Ergebnissen und Charakterquizzen. Die Arbeitsprobe zeigt sowohl individuelle Gestaltung als auch die Entwicklung einer nutzbaren Web-Anwendung.",
   },
   {
     slug: "sonnensystem",
@@ -125,7 +177,7 @@ const projects: Project[] = [
       },
     ],
     featured: true,
-    order: 2,
+    order: 3,
     intro:
       "Sonnensystem 3D ist ein interaktives Modell unseres Sonnensystems im Browser — Sonne, alle acht Planeten und ihre wichtigsten Monde, frei erkundbar. Kein Lehrbuch-Diagramm, sondern eine echte 3D-Szene, die man anfliegen, durchsuchen und in der Zeit vor- und zurückdrehen kann.",
     sections: [
@@ -156,7 +208,7 @@ const projects: Project[] = [
       {
         title: "Erkunden statt Klicken",
         body: [
-          "Eine Fokus-Kamera folgt jedem gewählten Himmelskörper weich. Ein Suchfeld filtert alle 24 Körper inklusive Monde, die Pfeiltasten schalten durch — und ein „Reise\"-Modus fährt automatisch durch das System.",
+          'Eine Fokus-Kamera folgt jedem gewählten Himmelskörper weich. Ein Suchfeld filtert alle 24 Körper inklusive Monde, die Pfeiltasten schalten durch — und ein „Reise"-Modus fährt automatisch durch das System.',
           "Jeder Zustand — Körper, Fokus, Ansicht, Datum — steht in der URL. Eine bestimmte Ansicht ist damit einfach teilbar.",
         ],
       },

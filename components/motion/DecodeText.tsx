@@ -7,19 +7,13 @@ import { useEffect, useState } from "react";
  * Zeichen. Startet (und SSRt) mit dem Zieltext → kein Hydration-Mismatch,
  * feste Breite/kein Reflow. Respektiert `prefers-reduced-motion`.
  */
-export function DecodeText({
-  text,
-  className,
-}: {
-  text: string;
-  className?: string;
-}) {
+export function DecodeText({ text, className }: { text: string; className?: string }) {
   const [out, setOut] = useState(text);
 
   useEffect(() => {
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
-      setOut(text);
-      return;
+      const frame = requestAnimationFrame(() => setOut(text));
+      return () => cancelAnimationFrame(frame);
     }
     const glyphs = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#/[]<>_·";
     const total = 26;

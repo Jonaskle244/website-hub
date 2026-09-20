@@ -13,7 +13,7 @@
   --color-line-2: #2e3644;
   --color-fg: #e7eaf0;
   --color-muted: #8b94a3;
-  --color-faint: #5a6373;
+  --color-faint: #8b94a3;
   --color-accent: #6d7cff;
   --color-accent-d: #4a57d6;
 
@@ -129,18 +129,10 @@ h4 {
   inset: -90px;
   z-index: -1;
   pointer-events: none;
-  background-image: radial-gradient(
-    circle,
-    rgba(46, 54, 68, 0.55) 1px,
-    transparent 1.5px
-  );
+  background-image: radial-gradient(circle, rgba(46, 54, 68, 0.55) 1px, transparent 1.5px);
   background-size: 26px 26px;
   will-change: transform;
-  -webkit-mask-image: radial-gradient(
-    circle at 50% 24%,
-    #000 30%,
-    transparent 86%
-  );
+  -webkit-mask-image: radial-gradient(circle at 50% 24%, #000 30%, transparent 86%);
   mask-image: radial-gradient(circle at 50% 24%, #000 30%, transparent 86%);
 }
 
@@ -241,5 +233,84 @@ h4 {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Gemeinsame Bedienelemente und sichere Ankersprünge unter der Navigation. */
+html {
+  scroll-padding-top: 8rem;
+}
+section[id] {
+  scroll-margin-top: 1rem;
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 5px;
+}
+.button-primary,
+.button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  min-height: 46px;
+  padding: 0.7rem 1rem;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+.button-primary {
+  background: var(--color-accent);
+  color: #0a0c10;
+}
+.button-primary:hover {
+  background: #8b96ff;
+}
+.button-secondary {
+  border: 1px solid var(--color-line-2);
+  color: var(--color-fg);
+}
+.button-secondary:hover {
+  border-color: var(--color-accent);
+}
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  color: var(--color-accent);
+  text-transform: uppercase;
+}
+.legal-copy h2 {
+  margin-top: 2rem;
+  margin-bottom: 0.8rem;
+  font-size: 1.25rem;
+  color: var(--color-fg);
+}
+.legal-copy p,
+.legal-copy address,
+.legal-copy ul {
+  margin-top: 0.8rem;
+  color: var(--color-muted);
+  font-style: normal;
+}
+.legal-copy ul {
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+.legal-copy a {
+  color: var(--color-fg);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+@media (prefers-reduced-motion: reduce) {
+  .has-js .reveal {
+    opacity: 1;
+    transform: none;
   }
 }

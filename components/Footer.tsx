@@ -1,28 +1,32 @@
-/**
- * Footer (Strang C4, reduziert) — Kontakt = nur E-Mail `info@codemantix.com`.
- * Keine eigene Kontakt- und keine Über-mich-Seite (mit Jonas entschieden 2026-07-03).
- */
+import Link from "next/link";
+import { CONTACT_EMAIL } from "@/lib/contact";
+
 export function Footer() {
   return (
-    <footer className="border-t border-line">
-      <div className="mx-auto flex max-w-5xl flex-col gap-3 px-6 py-10 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/brand/logomark.png"
-            alt="Codemantix"
-            className="h-5 w-5 object-contain opacity-80"
-          />
-          <span className="font-mono text-xs tracking-tight text-faint">
-            codemantix
-          </span>
+    <footer className="border-line border-t">
+      <div className="mx-auto flex max-w-5xl flex-col gap-5 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <Link href="/" className="text-fg font-mono text-sm">
+            [ codemantix ]
+          </Link>
+          <p className="text-muted mt-2 text-xs">Jonas Kleinsorge · Design & Entwicklung</p>
         </div>
-        <a
-          href="mailto:info@codemantix.com"
-          className="font-mono text-xs tracking-[0.14em] text-muted uppercase transition-colors hover:text-accent"
-        >
-          info@codemantix.com
-        </a>
+        <div className="flex flex-col gap-2 sm:items-end">
+          <a
+            href={`mailto:${CONTACT_EMAIL}`}
+            className="text-muted hover:text-accent py-2 font-mono text-xs"
+          >
+            {CONTACT_EMAIL}
+          </a>
+          <nav aria-label="Rechtliche Informationen" className="text-muted flex gap-5 text-xs">
+            <Link href="/impressum/" className="hover:text-fg py-2">
+              Impressum
+            </Link>
+            <Link href="/datenschutz/" className="hover:text-fg py-2">
+              Datenschutz
+            </Link>
+          </nav>
+        </div>
       </div>
     </footer>
   );

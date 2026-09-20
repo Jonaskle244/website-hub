@@ -20,12 +20,12 @@ const mono = JetBrains_Mono({
 
 const SITE_URL = "https://codemantix.com";
 const SITE_DESC =
-  "Codemantix — Portfolio & Projekte von Jonas: Web, Games und 3D. Gebaut, nicht zusammengeklickt.";
+  "Individuelle Websites und Web-Apps von Jonas Kleinsorge. Gestaltung, Entwicklung und Überarbeitung bestehender Websites – mit eigenen Projekten zum Ausprobieren.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Codemantix — Portfolio & Projekte",
+    default: "Codemantix — Websites & Web-Apps",
     template: "%s — Codemantix",
   },
   description: SITE_DESC,
@@ -36,13 +36,13 @@ export const metadata: Metadata = {
     siteName: "Codemantix",
     locale: "de_DE",
     url: "/",
-    title: "Codemantix — Portfolio & Projekte",
+    title: "Codemantix — Websites & Web-Apps",
     description: SITE_DESC,
     images: [{ url: "/og.png", width: 1200, height: 630, alt: "Codemantix" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Codemantix — Portfolio & Projekte",
+    title: "Codemantix — Websites & Web-Apps",
     description: SITE_DESC,
     images: ["/og.png"],
   },
