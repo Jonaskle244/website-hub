@@ -48,6 +48,51 @@ export const STATUS_LABEL: Record<ProjectStatus, string> = {
 
 const projects: Project[] = [
   {
+    slug: "lodge",
+    titel: "SEERUHE · Lodge",
+    tagline: "Filmische Website für eine fiktive Lodge am See – eine eigene Designstudie.",
+    rolle: "Designstudie · Konzept · Gestaltung · Entwicklung",
+    jahr: "2026",
+    status: "live",
+    stack: ["HTML", "CSS", "JavaScript", "Scroll-Video"],
+    cover: "/projects/lodge-cover.jpg",
+    links: [{ label: "lodge.codemantix.com", url: "https://lodge.codemantix.com/" }],
+    featured: true,
+    order: 1,
+    intro:
+      "SEERUHE ist eine eigene Designstudie für eine fiktive Lodge zwischen Wald und Wasser. Die englischsprachige Website verbindet ruhige Typografie, warme Naturfarben und eine Kamerafahrt, die sich beim Scrollen entfaltet. Sie ist eine gestalterische Arbeitsprobe, kein Kundenauftrag und keine buchbare Unterkunft.",
+    sections: [
+      {
+        title: "Ein Ort wird zum Erlebnis",
+        body: [
+          "Die Seite soll schon beim ersten Blick das Gefühl eines Rückzugsorts vermitteln. Großzügige Bilder, zurückhaltende Navigation und kurze Texte lassen der Landschaft und der Architektur Raum.",
+          "Vom See führt die Reise näher an die Terrasse und anschließend in den Innenraum. Gestaltung und Bewegung folgen dieser kleinen Geschichte.",
+        ],
+      },
+      {
+        title: "Bewegung durch Scrollen",
+        body: [
+          "Eine zehnsekündige Kamerafahrt folgt dem Scrollfortschritt. So bestimmen Besucher selbst, wie schnell sie sich der Lodge nähern. Die Darstellung bleibt auf maximal 1280 Pixel begrenzt, damit Bild und Text zusammenwirken.",
+          "Ein Standbildmodus bietet einen ruhigen Zugang zu den Inhalten. Der Innenraum erscheint als eigenständiges Bildmotiv.",
+        ],
+        image: {
+          src: "/projects/lodge-interior.jpg",
+          alt: "KI-generierter Innenraum der fiktiven SEERUHE-Lodge mit Blick auf den See",
+          caption: "Synthetisches Innenraummotiv der Designstudie.",
+        },
+      },
+      {
+        title: "Von der Bildidee zur Website",
+        body: [
+          "Die Bildwelt und die Kamerafahrt wurden mit KI erstellt, ausgewählt und für die Website aufbereitet. Aus den Schlüsselbildern entstand eine zusammenhängende visuelle Richtung; das Video wurde auf 4K hochskaliert und für die Webauslieferung komprimiert.",
+          "Die Umsetzung verwendet HTML, CSS und JavaScript. Die Website wird über Cloudflare ausgeliefert und lässt sich auf schmalen wie großen Bildschirmen erkunden.",
+        ],
+      },
+    ],
+    ergebnis:
+      "Seit September 2026 live: eine englischsprachige Konzeptwebsite mit scrollgesteuerter Kamerafahrt, Standbildmodus und eigener Bildwelt. Die Arbeitsprobe zeigt, wie aus einer fiktiven Unterkunft ein individueller Webauftritt entsteht.",
+  },
+  {
     slug: "cloudframe",
     titel: "Cloudframe",
     tagline: "Drohnen-Portfolio als filmisches Sucher-Erlebnis.",
@@ -63,7 +108,7 @@ const projects: Project[] = [
       },
     ],
     featured: true,
-    order: 1,
+    order: 2,
     intro:
       "Cloudframe ist meine eigene Website für Drohnenaufnahmen — kein Standard-Portfolio, sondern eine app-artige Seite, die sich anfühlt wie der Blick durch den Kamera-Sucher.",
     sections: [
@@ -120,7 +165,7 @@ const projects: Project[] = [
     cover: "/projects/kinokanon-cover.png",
     links: [{ label: "kinokanon.codemantix.com", url: "https://kinokanon.codemantix.com/de/" }],
     featured: true,
-    order: 2,
+    order: 3,
     intro:
       "Kinokanon ist mein eigenes Filmprojekt: eine Website, auf der Besucher Filme vergleichen, ein persönliches Ranking erstellen und ihr Ergebnis teilen können. Dazu kommen Filmreihenfolgen und Charakterquizze – auf Deutsch und Englisch.",
     sections: [
@@ -177,7 +222,7 @@ const projects: Project[] = [
       },
     ],
     featured: true,
-    order: 3,
+    order: 4,
     intro:
       "Sonnensystem 3D ist ein interaktives Modell unseres Sonnensystems im Browser — Sonne, alle acht Planeten und ihre wichtigsten Monde, frei erkundbar. Kein Lehrbuch-Diagramm, sondern eine echte 3D-Szene, die man anfliegen, durchsuchen und in der Zeit vor- und zurückdrehen kann.",
     sections: [
