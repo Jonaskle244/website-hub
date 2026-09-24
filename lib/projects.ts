@@ -48,6 +48,47 @@ export const STATUS_LABEL: Record<ProjectStatus, string> = {
 
 const projects: Project[] = [
   {
+    slug: "kernwerk",
+    titel: "KERNWERK",
+    tagline:
+      "Aus Partikeln wird Präzision – eine interaktive Industrie-Website auf Deutsch und Englisch.",
+    rolle: "Designstudie · Konzept · Gestaltung · Entwicklung",
+    jahr: "2026",
+    status: "live",
+    stack: ["WebGL", "Canvas", "JavaScript", "CSS"],
+    cover: "/projects/kernwerk-cover.png",
+    links: [{ label: "kernwerk.codemantix.com", url: "https://kernwerk.codemantix.com/" }],
+    featured: true,
+    order: 1,
+    intro:
+      "KERNWERK ist eine eigene Designstudie für einen fiktiven Präzisionsfertiger. Tausende Partikel formen beim Scrollen ein Aluminiumgehäuse. Die Reise führt durch das Bauteil in die Fertigung und weiter zu räumlichen Leistungskarten. Kein Kundenauftrag, sondern eine Arbeitsprobe für einen eigenständigen, interaktiven Firmenauftritt.",
+    sections: [
+      {
+        title: "Vom Partikelfeld zum Bauteil",
+        body: [
+          "Aus einem losen Feld silberner und orangefarbener Partikel entsteht Schritt für Schritt ein Bauteil. Der Scrollfortschritt steuert die Formation und anschließend den bildbasierten Durchflug in die CNC-Fertigung.",
+          "Die Animation lässt sich vorwärts und rückwärts erkunden oder automatisch abspielen. Das fertige Bauteil basiert auf einem Bild; es ist kein CAD-Modell.",
+        ],
+      },
+      {
+        title: "Eine Galerie in Bewegung",
+        body: [
+          "Fräsen, Drehen und Qualitätssicherung bekommen eigene räumliche Karten. Beim Wechsel zerfällt das zurückweichende Motiv in helle Bildfragmente. Mausbewegungen neigen die vordere Karte leicht und verschieben einen Lichtreflex.",
+          "Danach wird die Seite ruhig: Eine Projektanfrage fasst die Eingaben lokal zu einem kopierbaren Entwurf zusammen. In dieser Demo werden keine Anfragen versendet.",
+        ],
+      },
+      {
+        title: "Zwei Sprachen, eine Bildwelt",
+        body: [
+          "Deutsch und Englisch lassen sich direkt umschalten – von den Szenentexten über die Bedienung bis zur Projektübersicht. Für schmale Ansichten sind Bildausschnitte, Typografie und Partikelmenge angepasst. Ein Standbildmodus bietet einen Zugang ohne Animation.",
+          "Die Motive wurden mit KI erstellt und für die gemeinsame Bildwelt ausgewählt. WebGL erzeugt die Bauteilformation, Canvas die Bildfragmente und CSS die räumlichen Karten. Die Effekte entstehen im Browser; für KERNWERK wurde kein Higgsfield-Video verwendet.",
+        ],
+      },
+    ],
+    ergebnis:
+      "Eine veröffentlichte, zweisprachige Designstudie mit scrollgesteuerter Partikelformation, räumlicher Leistungsgalerie und lokalem Anfrageentwurf. Die klassische Firmenansicht bleibt als zweite Perspektive erreichbar.",
+  },
+  {
     slug: "lodge",
     titel: "SEERUHE · Lodge",
     tagline: "Filmische Website für eine fiktive Lodge am See – eine eigene Designstudie.",
@@ -58,7 +99,7 @@ const projects: Project[] = [
     cover: "/projects/lodge-cover.jpg",
     links: [{ label: "lodge.codemantix.com", url: "https://lodge.codemantix.com/" }],
     featured: true,
-    order: 1,
+    order: 2,
     intro:
       "SEERUHE ist eine eigene Designstudie für eine fiktive Lodge zwischen Wald und Wasser. Die englischsprachige Website verbindet ruhige Typografie, warme Naturfarben und eine Kamerafahrt, die sich beim Scrollen entfaltet. Sie ist eine gestalterische Arbeitsprobe, kein Kundenauftrag und keine buchbare Unterkunft.",
     sections: [
@@ -108,7 +149,7 @@ const projects: Project[] = [
       },
     ],
     featured: true,
-    order: 2,
+    order: 3,
     intro:
       "Cloudframe ist meine eigene Website für Drohnenaufnahmen — kein Standard-Portfolio, sondern eine app-artige Seite, die sich anfühlt wie der Blick durch den Kamera-Sucher.",
     sections: [
@@ -165,7 +206,7 @@ const projects: Project[] = [
     cover: "/projects/kinokanon-cover.png",
     links: [{ label: "kinokanon.codemantix.com", url: "https://kinokanon.codemantix.com/de/" }],
     featured: true,
-    order: 3,
+    order: 4,
     intro:
       "Kinokanon ist mein eigenes Filmprojekt: eine Website, auf der Besucher Filme vergleichen, ein persönliches Ranking erstellen und ihr Ergebnis teilen können. Dazu kommen Filmreihenfolgen und Charakterquizze – auf Deutsch und Englisch.",
     sections: [
@@ -222,7 +263,7 @@ const projects: Project[] = [
       },
     ],
     featured: true,
-    order: 4,
+    order: 5,
     intro:
       "Sonnensystem 3D ist ein interaktives Modell unseres Sonnensystems im Browser — Sonne, alle acht Planeten und ihre wichtigsten Monde, frei erkundbar. Kein Lehrbuch-Diagramm, sondern eine echte 3D-Szene, die man anfliegen, durchsuchen und in der Zeit vor- und zurückdrehen kann.",
     sections: [
