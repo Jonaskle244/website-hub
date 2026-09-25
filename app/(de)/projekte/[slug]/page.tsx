@@ -23,6 +23,7 @@ export async function generateMetadata({
   if (!project) return { title: "Projekt nicht gefunden" };
   return {
     title: project.titel,
+    alternates: { canonical: `/projekte/${slug}/`, languages: { de: `/projekte/${slug}/`, en: `/en/projekte/${slug}/` } },
     description: project.tagline,
     openGraph: {
       title: `${project.titel} — Codemantix`,

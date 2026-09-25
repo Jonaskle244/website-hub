@@ -1,20 +1,22 @@
 import Link from "next/link";
+import { LanguageSwitch } from "./LanguageSwitch";
 
-const links = [
-  { href: "/projekte/", label: "Projekte" },
-  { href: "/#leistungen", label: "Leistungen" },
-];
 
 /**
  * Nav-Shell (Strang F2 + Motion-Konzept Effekt 02b). Logo = animiertes
  * `[c]`-SVG-Mark (Klammern ploppen beim Laden, das C zeichnet sich, Hover
  * spreizt die Klammern) + Mono-Wortmarke. Leistungen und Kontakt liegen auf Home.
  */
-export function Nav() {
+export function Nav({ locale }: { locale: "de" | "en" }) {
+  const base = locale === "en" ? "/en/" : "/";
+  const links = [
+    { href: `${base}projekte/`, label: locale === "en" ? "Projects" : "Projekte" },
+    { href: `${base}#leistungen`, label: locale === "en" ? "Services" : "Leistungen" },
+  ];
   return (
     <header className="border-line bg-base/70 sticky top-0 z-50 border-b backdrop-blur">
       <nav className="mx-auto flex min-h-16 max-w-5xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-6 py-3">
-        <Link href="/" className="logo flex items-center gap-3.5" aria-label="Codemantix">
+        <Link href={base} className="logo flex items-center gap-3.5" aria-label="Codemantix">
           <svg
             className="logo-mark block h-[26px] w-[26px]"
             viewBox="0 0 100 100"
@@ -54,7 +56,7 @@ export function Nav() {
             CODEMANTIX
           </span>
         </Link>
-        <ul className="text-muted flex items-center gap-4 font-mono text-xs tracking-[0.04em] uppercase sm:gap-6">
+        <ul className="text-muted flex flex-wrap items-center gap-x-4 gap-y-0 font-mono text-xs tracking-[0.04em] uppercase sm:gap-x-6">
           {links.map((l) => (
             <li key={l.href}>
               <a
@@ -65,15 +67,15 @@ export function Nav() {
               </a>
             </li>
           ))}
+          <LanguageSwitch locale={locale} />
           <li>
             {/* Native navigation avoids duplicated hash fragments in the static App Router. */}
-            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a
-              href="/#kontakt"
+              href={`${base}#kontakt`}
               className="border-accent/50 text-accent hover:bg-accent inline-flex min-h-10 items-center rounded-sm border px-3 transition-colors hover:text-[#0a0c10]"
             >
-              <span className="sm:hidden">Anfragen</span>
-              <span className="hidden sm:inline">Projekt anfragen</span>
+              <span className="sm:hidden">{locale === "en" ? "Contact" : "Anfragen"}</span>
+              <span className="hidden sm:inline">{locale === "en" ? "Start a project" : "Projekt anfragen"}</span>
             </a>
           </li>
         </ul>

@@ -13,11 +13,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/lab/night-brief/`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/impressum/`, changeFrequency: "yearly", priority: 0.2 },
     { url: `${SITE_URL}/datenschutz/`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${SITE_URL}/en/`, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${SITE_URL}/en/projekte/`, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${SITE_URL}/en/impressum/`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${SITE_URL}/en/datenschutz/`, changeFrequency: "yearly", priority: 0.2 },
   ];
   const projectRoutes: MetadataRoute.Sitemap = getProjects().map((p) => ({
     url: `${SITE_URL}/projekte/${p.slug}/`,
     changeFrequency: "monthly",
     priority: 0.6,
   }));
-  return [...staticRoutes, ...projectRoutes];
+  const englishProjectRoutes: MetadataRoute.Sitemap = getProjects().map((p) => ({
+    url: `${SITE_URL}/en/projekte/${p.slug}/`,
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
+  return [...staticRoutes, ...projectRoutes, ...englishProjectRoutes];
 }

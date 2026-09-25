@@ -1,0 +1,81 @@
+import type { Metadata } from "next";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import "../globals.css";
+import { Nav } from "@/components/nav/Nav";
+import { Footer } from "@/components/Footer";
+import { GridParallax } from "@/components/motion/GridParallax";
+import { Reveals } from "@/components/motion/Reveals";
+
+const sans = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const SITE_URL = "https://codemantix.com";
+const SITE_DESC =
+  "Individuelle Websites und Web-Apps von Jonas Kleinsorge. Gestaltung, Entwicklung und Überarbeitung bestehender Websites – mit eigenen Projekten zum Ausprobieren.";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Codemantix — Websites & Web-Apps",
+    template: "%s — Codemantix",
+  },
+  description: SITE_DESC,
+  alternates: { canonical: "/", languages: { de: "/", en: "/en/" } },
+  applicationName: "Codemantix",
+  authors: [{ name: "Jonas" }],
+  openGraph: {
+    type: "website",
+    siteName: "Codemantix",
+    locale: "de_DE",
+    url: "/",
+    title: "Codemantix — Websites & Web-Apps",
+    description: SITE_DESC,
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Codemantix" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Codemantix — Websites & Web-Apps",
+    description: SITE_DESC,
+    images: ["/og.png"],
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="de"
+      // Das `has-js`-Script unten mutiert documentElement vor der Hydration —
+      // daher bewusst die className-Diff-Warnung auf <html> unterdrücken.
+      suppressHydrationWarning
+      className={`${sans.variable} ${mono.variable} h-full antialiased`}
+    >
+      <body className="flex min-h-full flex-col">
+        {/* Motion-States (Entrance/Reveals) sind unter `.has-js` gated — vor
+            dem ersten Paint setzen, damit ohne JS nichts versteckt bleibt. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "document.documentElement.classList.add('has-js')",
+          }}
+        />
+        <GridParallax />
+        <Reveals />
+        <Nav locale="de" />
+        <div className="flex flex-1 flex-col">{children}</div>
+        <Footer locale="de" />
+      </body>
+    </html>
+  );
+}

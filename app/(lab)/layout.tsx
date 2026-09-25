@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
-import "./globals.css";
-import { Nav } from "../components/nav/Nav";
-import { Footer } from "../components/Footer";
-import { GridParallax } from "../components/motion/GridParallax";
-import { Reveals } from "../components/motion/Reveals";
+import "../globals.css";
+import { Nav } from "@/components/nav/Nav";
+import { Footer } from "@/components/Footer";
+import { GridParallax } from "@/components/motion/GridParallax";
+import { Reveals } from "@/components/motion/Reveals";
 
 const sans = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -20,29 +20,30 @@ const mono = JetBrains_Mono({
 
 const SITE_URL = "https://codemantix.com";
 const SITE_DESC =
-  "Individuelle Websites und Web-Apps von Jonas Kleinsorge. Gestaltung, Entwicklung und Überarbeitung bestehender Websites – mit eigenen Projekten zum Ausprobieren.";
+  "Custom websites and web apps by Jonas Kleinsorge. Design, development and improvements to existing sites, with projects you can explore.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Codemantix — Websites & Web-Apps",
+    default: "Codemantix — Websites & Web Apps",
     template: "%s — Codemantix",
   },
   description: SITE_DESC,
+  alternates: { canonical: "/lab/night-brief/" },
   applicationName: "Codemantix",
   authors: [{ name: "Jonas" }],
   openGraph: {
     type: "website",
     siteName: "Codemantix",
-    locale: "de_DE",
-    url: "/",
-    title: "Codemantix — Websites & Web-Apps",
+    locale: "en_US",
+    url: "/lab/night-brief/",
+    title: "Codemantix — Websites & Web Apps",
     description: SITE_DESC,
     images: [{ url: "/og.png", width: 1200, height: 630, alt: "Codemantix" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Codemantix — Websites & Web-Apps",
+    title: "Codemantix — Websites & Web Apps",
     description: SITE_DESC,
     images: ["/og.png"],
   },
@@ -55,7 +56,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="de"
+      lang="en"
       // Das `has-js`-Script unten mutiert documentElement vor der Hydration —
       // daher bewusst die className-Diff-Warnung auf <html> unterdrücken.
       suppressHydrationWarning
@@ -71,9 +72,9 @@ export default function RootLayout({
         />
         <GridParallax />
         <Reveals />
-        <Nav />
+        <Nav locale="en" />
         <div className="flex flex-1 flex-col">{children}</div>
-        <Footer />
+        <Footer locale="en" />
       </body>
     </html>
   );

@@ -6,7 +6,7 @@ import { CONTACT_FORM } from "@/lib/contact";
 export const metadata: Metadata = {
   title: "Impressum",
   description: "Anbieterkennzeichnung und Kontakt für Codemantix – Jonas Kleinsorge.",
-  alternates: { canonical: "/impressum/" },
+  alternates: { canonical: "/impressum/", languages: { de: "/impressum/", en: "/en/impressum/" } },
 };
 
 export default function Impressum() {

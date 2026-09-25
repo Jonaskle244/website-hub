@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Datenschutz",
   description:
     "Informationen zur Datenverarbeitung beim Besuch von codemantix.com und bei einer Kontaktaufnahme.",
-  alternates: { canonical: "/datenschutz/" },
+  alternates: { canonical: "/datenschutz/", languages: { de: "/datenschutz/", en: "/en/datenschutz/" } },
 };
 
 export default function Datenschutz() {

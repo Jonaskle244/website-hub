@@ -6,20 +6,20 @@ import { STATUS_LABEL, type Project } from "@/lib/projects";
  * Vier Sucher-Eckwinkel liegen dezent auf dem Cover; beim Hover fahren sie in
  * die Ecken, färben sich Akzent, die Karte hebt sich mit Indigo-Glow.
  */
-export function ProjectCard({ project }: { project: Project }) {
+export function ProjectCard({ project, locale = "de" }: { project: Project; locale?: "de" | "en" }) {
   const nn = String(project.order).padStart(2, "0");
   const ease = "ease-[cubic-bezier(0.16,0.84,0.44,1)]";
 
   return (
     <Link
-      href={`/projekte/${project.slug}`}
+      href={`${locale === "en" ? "/en" : ""}/projekte/${project.slug}/`}
       className={`group border-line bg-surface relative flex flex-col overflow-hidden rounded-sm border transition-[transform,border-color,box-shadow] duration-500 ${ease} hover:border-accent/45 hover:-translate-y-1 hover:shadow-[0_26px_70px_-26px_rgba(109,124,255,0.35)]`}
     >
       <div className="border-line bg-base relative aspect-[16/9] overflow-hidden border-b">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={project.cover}
-          alt={`${project.titel} — Cover`}
+          alt={`${project.titel} — ${locale === "en" ? "cover" : "Cover"}`}
           className="h-full w-full object-cover object-top opacity-90 transition-opacity duration-500 group-hover:opacity-100"
         />
 
@@ -40,9 +40,9 @@ export function ProjectCard({ project }: { project: Project }) {
 
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-3 flex items-center justify-between font-mono text-xs">
-          <span className="text-faint">{`// projekt_${nn}`}</span>
+          <span className="text-faint">{`// ${locale === "en" ? "project" : "projekt"}_${nn}`}</span>
           <span className="text-muted">
-            {STATUS_LABEL[project.status]} · {project.jahr}
+            {locale === "en" ? { live: "live", "in-arbeit": "in progress", archiviert: "archived" }[project.status] : STATUS_LABEL[project.status]} · {project.jahr}
           </span>
         </div>
 
