@@ -144,6 +144,26 @@ const copy: Record<string, EnglishProject> = {
       ] }
     ],
     ergebnis: "A published English-language web experiment with four connected scenes, a scroll-driven camera journey, light and fragment effects, and four photographic glass cards."
+  },
+  vesper: {
+    tagline: "A cinematic perfume house with fragrance worlds in motion.",
+    rolle: "Independent concept study · Concept · Design · Development",
+    intro: "VESPER is an independent concept study for a fictional perfume house. The website tells the story of a fragrance between day and night: a cinematic bottle opening, a journey through three notes and a fine perfume mist on its own stage. There is no real product and nothing for sale.",
+    sections: [
+      { title: "A fragrance told in three moments", body: [
+        "As visitors scroll, L’Heure Bleue unfolds from bergamot through iris to cedarwood. Imagery, light and copy follow the three moments, while visitors control the pace.",
+        "Quiet typography and a violet-and-gold visual world give the fictional house its own character. Visitors can switch between German and English directly on the site."
+      ] },
+      { title: "Cinematic movement inside the image", body: [
+        "Short Higgsfield film sequences animate the ingredient still life and the bottle with its atomizer. Bergamot peel moves within the original composition; a fine mist emerges from the golden nozzle.",
+        "Videos play only while their scenes are visible. Visitors can pause motion, while reduced-motion settings and loading failures retain photographic stills."
+      ] },
+      { title: "Implementation", body: [
+        "The site is built from lightweight HTML, CSS and JavaScript. A WebGL effect refracts light over the bottle photograph; film complements the imagery without obstructing navigation.",
+        "The public demo is hosted directly on codemantix.com. The original Sites preview remains a private working version."
+      ] }
+    ],
+    ergebnis: "A published bilingual perfume-house demo with three fragrance chapters, cinematic ingredient and spray footage, a motion toggle and photographic fallbacks."
   }
 };
 
@@ -155,7 +175,7 @@ export function getProjectsEn(): Project[] {
     return {
       ...project,
       ...translated,
-      links: project.slug === "kinokanon" ? project.links.map((link) => ({ ...link, url: "https://kinokanon.codemantix.com/en/" })) : project.links,
+      links: project.slug === "kinokanon" ? project.links.map((link) => ({ ...link, url: "https://kinokanon.codemantix.com/en/" })) : project.slug === "vesper" ? project.links.map((link) => ({ ...link, label: "Explore VESPER", url: "https://codemantix.com/vesper/?lang=en" })) : project.links,
       sections: project.sections.map((section, index) => ({
         ...section,
         ...translated.sections[index],

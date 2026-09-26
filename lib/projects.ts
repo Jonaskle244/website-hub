@@ -349,6 +349,46 @@ const projects: Project[] = [
     ergebnis:
       "Ein veröffentlichtes, englischsprachiges Webexperiment mit vier verbundenen Szenen, scrollgesteuerter Kamerafahrt, Licht- und Fragmentanimation und vier fotografischen Glaskarten.",
   },
+  {
+    slug: "vesper",
+    titel: "VESPER",
+    tagline: "Ein filmisches Parfumhaus mit bewegten Duftwelten.",
+    rolle: "Eigene Designstudie · Konzept · Gestaltung · Entwicklung",
+    jahr: "2026",
+    status: "live",
+    stack: ["HTML", "CSS", "JavaScript", "WebGL", "Higgsfield"],
+    cover: "/projects/vesper-cover.jpg",
+    links: [{ label: "VESPER erleben", url: "https://codemantix.com/vesper/" }],
+    featured: true,
+    order: 7,
+    intro:
+      "VESPER ist eine eigenständige Designstudie für ein fiktives Parfumhaus. Die Website inszeniert einen Duft zwischen Tag und Nacht: ein filmischer Flakonauftakt, eine Reise durch drei Duftnoten und ein feiner Sprühstoß auf einer eigenen Bühne. Es gibt kein reales Produkt und keinen Verkauf.",
+    sections: [
+      {
+        title: "Der Duft als Erzählung",
+        body: [
+          "L’Heure Bleue entfaltet sich beim Scrollen von Bergamotte über Iris bis Zedernholz. Bild, Lichtfarbe und Text folgen diesen drei Momenten, während die Besucher das Tempo selbst bestimmen.",
+          "Die ruhige Typografie und die violett-goldene Bildwelt geben dem fiktiven Haus einen eigenen Charakter. Die Seite lässt sich direkt zwischen Deutsch und Englisch umschalten.",
+        ],
+      },
+      {
+        title: "Filmische Bewegung im vorhandenen Bild",
+        body: [
+          "Für das Zutatenstillleben und den Flakon mit Zerstäuber wurden kurze Filmsequenzen mit Higgsfield erzeugt. Die Bergamottenschale bewegt sich im bestehenden Stillleben; ein feiner Sprühnebel tritt aus dem goldenen Zerstäuber aus.",
+          "Die Videos laufen nur in sichtbaren Abschnitten. Wer weniger Bewegung möchte, kann sie pausieren; bei reduzierter Bewegung und Ladefehlern bleiben fotografische Standbilder erhalten.",
+        ],
+      },
+      {
+        title: "Umsetzung",
+        body: [
+          "Die Site besteht aus leichtgewichtigen HTML-, CSS- und JavaScript-Dateien. Ein WebGL-Effekt bricht das Licht über dem Flakonfoto; die Filme ergänzen das Bild, ohne das Navigieren zu blockieren.",
+          "Die öffentliche Demo liegt direkt auf codemantix.com. Die ursprüngliche Sites-Vorschau bleibt als private Arbeitsversion erhalten.",
+        ],
+      },
+    ],
+    ergebnis:
+      "Eine veröffentlichte, zweisprachige Parfumhaus-Demo mit drei Duftkapiteln, filmischen Zutaten- und Sprühaufnahmen, Bewegungsschalter und fotografischen Fallbacks.",
+  },
 ];
 
 export function getProjects(): Project[] {
