@@ -124,6 +124,26 @@ const copy: Record<string, EnglishProject> = {
       ] }
     ],
     ergebnis: "Live at solarsystem.codemantix.com since July 2026. The core feature set is complete and approved. Next up are improvements to the asset pipeline and code splitting for faster loading."
+  },
+  "reality-breaker": {
+    tagline: "A scroll-driven journey through light, fragments and a new order.",
+    rolle: "Independent concept study · Concept · Design · Development",
+    intro: "Reality Breaker is an independent web experiment. Instead of a conventional business site, a camera journey takes visitors through four states as they scroll: a breaking surface, the light engine, a stream of fragments and a new sculpture. It explores what visual storytelling can do in the browser.",
+    sections: [
+      { title: "One continuous camera journey", body: [
+        "Scroll position controls the camera, lights, fragments and the assembly of the final form. Scrolling forwards or backwards follows the same spatial journey. An automatic play mode is available too.",
+        "The light engine opens into a passage, which leads into the fragment stream. Those same fragments come together as a sculpture at the end."
+      ] },
+      { title: "Real images inside a digital world", body: [
+        "Four real photographs appear one after another in translucent glass cards: architecture and water around the light engine, then ice and basalt in the fragment stream. Short texts connect them to light, fracture and structure.",
+        "The photos are served locally with source credits. The spatial scene and lighting effects are generated in the browser."
+      ] },
+      { title: "Interaction and implementation", body: [
+        "Three.js renders the continuous 3D space with reflections, bloom and a camera path. A custom WebGL shader powers the opening and provides a simplified view if the 3D scene is unavailable.",
+        "The layout adapts to narrow screens, and a reduced-motion option offers calmer chapter views. The entire public experience is in English."
+      ] }
+    ],
+    ergebnis: "A published English-language web experiment with four connected scenes, a scroll-driven camera journey, light and fragment effects, and four photographic glass cards."
   }
 };
 

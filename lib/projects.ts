@@ -309,6 +309,46 @@ const projects: Project[] = [
     ergebnis:
       "Seit Juli 2026 live unter solarsystem.codemantix.com — die Kern-Feature-Runde ist abgeschlossen und abgenommen. Als Nächstes: Asset-Pipeline und Code-Splitting für schnellere Ladezeiten.",
   },
+  {
+    slug: "reality-breaker",
+    titel: "Reality Breaker",
+    tagline: "Eine scrollgesteuerte Reise durch Licht, Fragmente und neue Ordnung.",
+    rolle: "Eigene Designstudie · Konzept · Gestaltung · Entwicklung",
+    jahr: "2026",
+    status: "live",
+    stack: ["Three.js", "WebGL", "JavaScript", "CSS"],
+    cover: "/projects/reality-breaker-cover.png",
+    links: [{ label: "realitybreaker.codemantix.com", url: "https://realitybreaker.codemantix.com/" }],
+    featured: true,
+    order: 6,
+    intro:
+      "Reality Breaker ist ein eigenständiges Webexperiment. Statt einer klassischen Unternehmensseite führt eine Kamerafahrt beim Scrollen durch vier Zustände: eine aufbrechende Oberfläche, den Lichtkern, einen Strom aus Fragmenten und eine neue Skulptur. Es ist eine Arbeitsprobe für visuelle und technische Möglichkeiten im Browser.",
+    sections: [
+      {
+        title: "Eine durchgehende Kamerafahrt",
+        body: [
+          "Die Scrollposition steuert Kamera, Licht, Fragmente und den Zusammenbau der finalen Form. Vorwärts- und Rückwärtsscrollen führen durch dieselbe räumliche Reise. Eine automatische Fahrt ist ebenfalls möglich.",
+          "Der Lichtkern öffnet sich zu einem Durchgang; daraus entsteht der Fragmentstrom. Dieselben Fragmente finden am Ende zu einer Skulptur zusammen.",
+        ],
+      },
+      {
+        title: "Reale Bilder in einer digitalen Welt",
+        body: [
+          "Vier echte Fotografien erscheinen nacheinander als transparente Glaskarten: Architektur und Wasser am Lichtkern, Eis und Basalt im Fragmentstrom. Kurze Texte verbinden die Motive mit Licht, Bruch und Struktur.",
+          "Die Fotos sind lokal eingebunden und mit Quellen und Credits versehen. Die räumliche Szene und die Lichtwirkung werden im Browser erzeugt.",
+        ],
+      },
+      {
+        title: "Interaktion und Umsetzung",
+        body: [
+          "Three.js zeichnet den zusammenhängenden 3D-Raum mit Reflexionen, Bloom und Kamerapfad. Ein eigener WebGL-Shader übernimmt den Einstieg und eine vereinfachte Ansicht, falls die 3D-Szene nicht verfügbar ist.",
+          "Für schmale Bildschirme wird die Darstellung angepasst. Eine Option für reduzierte Bewegung ermöglicht ruhige Kapitelansichten. Die gesamte öffentliche Experience ist auf Englisch.",
+        ],
+      },
+    ],
+    ergebnis:
+      "Ein veröffentlichtes, englischsprachiges Webexperiment mit vier verbundenen Szenen, scrollgesteuerter Kamerafahrt, Licht- und Fragmentanimation und vier fotografischen Glaskarten.",
+  },
 ];
 
 export function getProjects(): Project[] {
