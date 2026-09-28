@@ -3,9 +3,7 @@
 const $ = (q) => document.querySelector(q);
 const clamp = (n, a = 0, b = 1) => Math.max(a, Math.min(b, n));
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-const fine = matchMedia('(pointer: fine)');
-let paused = reduced.matches, progress = 0, currentChapter = -1, frame = 0, lastTime = 0, animationTime = 0;
-let heroVisible = true;
+let paused = reduced.matches, progress = 0, currentChapter = -1;
 const hero = $('.hero'), journey = $('.journey'), stage = $('.journey-stage'), flight = $('.ingredient-flight'), flightStage = $('.flight-stage'), spray = $('.spray-scene');
 let language = 'de';
 const translations = {
@@ -23,11 +21,6 @@ const translations = {
   '.chapter-track button:nth-child(2)': '<span>02</span> Heart<span class="track-line"></span>',
   '.chapter-track button:nth-child(3)': '<span>03</span> Base<span class="track-line"></span>',
   '.journey-hint': 'Every scroll reveals another facet.',
-  '.flight-caption .eyebrow': 'FROM NATURE TO FRAGRANCE',
-  '.flight-caption h2': 'From nature<br><em>comes VESPER.</em>',
-  '.flight-footer>span:nth-child(1)': 'BERGAMOT',
-  '.flight-footer>span:nth-child(2)': 'IRIS',
-  '.flight-footer>span:nth-child(3)': 'CEDARWOOD',
   '.spray-copy .eyebrow': 'THE MOMENT IT MEETS SKIN',
   '#spray-title': 'One pulse.<br><em>One feeling.</em>',
   '.spray-copy p:last-child': 'A fine mist on skin. A feeling that stays.',
@@ -52,11 +45,9 @@ const ariaTranslations = {
   '.wordmark': { 'aria-label': 'Vesper – back to the beginning' },
   'header nav': { 'aria-label': 'Main navigation' },
   '.language-switch': { 'aria-label': 'Choose language' },
-  '.hero-media': { 'aria-label': 'Glass perfume bottle with amber fragrance in violet backlight' },
   '.journey': { 'aria-label': 'How the fragrance unfolds' },
   '.chapter-track': { 'aria-label': 'Fragrance chapters' },
-  '.ingredient-flight': { 'aria-label': 'A camera journey through the fragrance notes' },
-  '.flight-frames': { 'aria-label': 'Bergamot peel, iris and cedarwood pass the camera in violet and gold light; the VESPER bottle appears at the end' },
+  '.flight-frames': { 'aria-label': 'Iris and bergamot peel open the view onto the VESPER bottle in violet and gold light' },
   '.spray-photo': { 'aria-label': 'VESPER bottle with golden atomizer in violet light' },
   '.still-life': { 'aria-label': 'Iris, bergamot peel and cedarwood arranged as a sculptural fragrance composition' }
 };
@@ -116,7 +107,6 @@ function setupFilm(scene, video, isMotionPaused) {
   video.addEventListener('error', () => {
     failed = true;
     scene.classList.remove('has-film');
-    startAnimation();
   });
   const observer = new IntersectionObserver(entries => {
     visible = entries[0].isIntersecting && entries[0].intersectionRatio > .001;
@@ -194,12 +184,9 @@ function setupScrollFilm(scene, video, isMotionPaused) {
 const scrollFilm = setupScrollFilm(flight, $('#flight-film'), () => paused);
 
 const films = [
- setupFilm(hero, $('#hero-film'), () => paused),
  setupFilm(stage, $('#materials-film'), () => paused),
  setupFilm(spray, $('#spray-film'), () => paused)
 ];
-const needsCanvas = () => heroVisible;
-const pointer = { x: .7, y: .5, tx: .7, ty: .5 };
 const chapters = [
 {label:'01 — DER ERSTE IMPULS',title:'Ein heller<br><em>Auftakt.</em>',description:'Bergamotte. Klar, grün und voller Licht.<br>Wie das letzte Leuchten eines langen Tages.',en:{label:'01 — THE FIRST SPARK',title:'A bright<br><em>beginning.</em>',description:'Bergamot. Clear, green, full of light.<br>Like the last glow of a long day.'},color:[.76,.7,.27]},
 {label:'02 — MITTEN IM MOMENT',title:'Ein weiches<br><em>Innehalten.</em>',description:'Iris. Pudrig, floral und voller Ruhe.<br>Die Welt wird leiser. Der Moment wird deiner.',en:{label:'02 — WITHIN THE MOMENT',title:'A soft<br><em>pause.</em>',description:'Iris. Powdery, floral, at ease.<br>The world grows quieter. The moment becomes yours.'},color:[.64,.32,.92]},
@@ -228,19 +215,36 @@ function syncScroll() {
  syncFlight();
 }
 function smooth(a,b,x){const t=clamp((x-a)/(b-a));return t*t*(3-2*t);}
+function syncIntroCopy(){
+ const video=$('#flight-film');
+ const p=Number.isFinite(video.duration)&&video.duration>0?video.currentTime/video.duration:0;
+ const reveal=paused||flight.classList.contains('film-failed')?1:smooth(.42,.67,p);
+ flight.style.setProperty('--intro-copy',String(reveal));
+ flight.style.setProperty('--intro-shift',`${(1-reveal)*24}px`);
+ const crop=paused&&!flight.classList.contains('has-scroll-film')?1:smooth(.08,.67,p);
+ flight.style.setProperty('--intro-crop',`${50+crop*30}%`);
+ flight.style.setProperty('--intro-media-height',`${100-crop*38}%`);
+ flight.style.setProperty('--intro-media-top',`${crop*3}%`);
+ $('.hero-bottom a').href=reveal>.55?'#duft':'#auftakt';
+ const visible=reveal>.08;
+ const copy=$('.hero-content');
+ copy.inert=!visible;
+ copy.setAttribute('aria-hidden',String(!visible));
+ document.body.classList.toggle('intro-open',reveal>.55);
+}
 function syncFlight(){
  const rect=flight.getBoundingClientRect();
  const span=Math.max(1,flight.offsetHeight-flightStage.offsetHeight);
  const p=clamp(-rect.top/span);
- scrollFilm.setProgress(p);
- if(!paused){
-  const caption=flight.querySelector('.flight-caption');
-  const reveal=smooth(.78,.96,p);
-  caption.style.opacity=String(reveal);
-  caption.style.transform=`translateY(${(1-reveal)*26}px)`;
- }
- flight.querySelector('.flight-line i').style.transform=`scaleX(${p})`;
+ scrollFilm.setProgress(clamp(p/.86));
+ syncIntroCopy();
 }
+$('#flight-film').addEventListener('seeked',syncIntroCopy);
+$('#flight-film').addEventListener('error',()=>{
+ flight.classList.add('film-failed');
+ $('.flight-poster').src='assets/hero.webp';
+ syncIntroCopy();
+});
 let scrollPending=false;
 addEventListener('scroll',()=>{if(!scrollPending){scrollPending=true;requestAnimationFrame(()=>{syncScroll();scrollPending=false;});}}, {passive:true});
 chapterButtons.forEach((button,index)=>button.addEventListener('click',()=>{
@@ -260,69 +264,13 @@ function setPaused(value){
  paused=value;document.body.classList.toggle('paused',paused);
  $('#motion').setAttribute('aria-pressed',String(paused));
  renderMotionLabel();
- if(paused){cancelAnimationFrame(frame);frame=0;}else{lastTime=0;startAnimation();}
+ if(!flight.classList.contains('has-scroll-film')) $('.flight-poster').src=paused?'assets/hero.webp':'assets/flight-film-poster.webp';
  films.forEach(film=>film.sync());
  syncScroll();
 }
 $('#motion').addEventListener('click',()=>setPaused(!paused));
 reduced.addEventListener('change',event=>setPaused(event.matches));
-hero.addEventListener('pointermove',e=>{if(fine.matches){const r=hero.getBoundingClientRect();pointer.tx=e.clientX/r.width;pointer.ty=1-(e.clientY-r.top)/r.height;}},{passive:true});
-hero.addEventListener('pointerleave',()=>{pointer.tx=.7;pointer.ty=.5;});
-
-// Native WebGL: restrained refraction on the product photograph and a changing light field.
-const vertex=`attribute vec2 a;varying vec2 uv;void main(){uv=a*.5+.5;gl_Position=vec4(a,0.,1.);}`;
-const common=`precision mediump float;varying vec2 uv;uniform vec2 resolution;uniform float time;uniform float progress;uniform vec2 mouse;uniform vec3 tint;
-float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1)),f.x),f.y);}
-float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*noise(p);p=p*2.03+3.7;a*=.5;}return v;}`;
-const heroFragment=common+`
-uniform sampler2D picture;uniform vec2 imageSize;uniform float alignX;
-vec2 cover(vec2 p){float a=resolution.x/resolution.y,b=imageSize.x/imageSize.y;vec2 scale=vec2(min(a/b,1.),min(b/a,1.));return p*scale+vec2((1.-scale.x)*alignX,(1.-scale.y)*.5);}
-void main(){
- vec2 p=uv;vec2 aspect=vec2(resolution.x/resolution.y,1.);
- float d=length((p-mouse)*aspect);float lens=exp(-d*d*17.);
- float sweep=pow(max(0.,sin(p.x*4.+p.y*2.-time*.34)),18.);
- vec2 offset=vec2(sin(p.y*13.+time*.45),cos(p.x*11.-time*.35))*.00045;
- offset+=(p-mouse)*lens*.007;
- vec2 q=cover(p+offset);
- float chroma=.00012+lens*.0004;
- vec3 col=vec3(texture2D(picture,q+vec2(chroma,0)).r,texture2D(picture,q).g,texture2D(picture,q-vec2(chroma,0)).b);
- float bright=dot(col,vec3(.3,.5,.2));
- col+=vec3(.15,.08,.19)*sweep*bright;
- gl_FragColor=vec4(col,1.);
-}`;
-function makeRenderer(canvas,fragment){
- const gl=canvas.getContext('webgl',{alpha:true,antialias:false,premultipliedAlpha:false,powerPreference:'low-power'});if(!gl)return null;
- const shaders=[];
- function shader(type,source){const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){gl.deleteShader(s);return null;}shaders.push(s);return s;}
- const vs=shader(gl.VERTEX_SHADER,vertex),fs=shader(gl.FRAGMENT_SHADER,fragment);if(!vs||!fs)return null;
- const program=gl.createProgram();gl.attachShader(program,vs);gl.attachShader(program,fs);gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))return null;
- shaders.forEach(s=>gl.deleteShader(s));gl.useProgram(program);
- const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
- const a=gl.getAttribLocation(program,'a');gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,2,gl.FLOAT,false,0,0);
- const uniforms={};['resolution','time','progress','mouse','tint','picture','imageSize','alignX'].forEach(n=>uniforms[n]=gl.getUniformLocation(program,n));
- let alive=true;canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();alive=false;canvas.style.opacity='0';});
- function resize(){const r=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,1.5);canvas.width=Math.max(1,Math.round(r.width*dpr));canvas.height=Math.max(1,Math.round(r.height*dpr));gl.viewport(0,0,canvas.width,canvas.height);}
- resize();
- return {gl,uniforms,resize,draw(t){if(!alive)return;gl.useProgram(program);gl.uniform2f(uniforms.resolution,canvas.width,canvas.height);gl.uniform1f(uniforms.time,t);gl.uniform1f(uniforms.progress,progress);gl.uniform2f(uniforms.mouse,pointer.x,pointer.y);const blend=clamp(progress*3-.5,0,2),i=Math.floor(blend),j=Math.min(2,i+1),k=blend-i;const a=chapters[i].color,b=chapters[j].color;gl.uniform3f(uniforms.tint,...a.map((c,x)=>c+(b[x]-c)*k));gl.uniform1f(uniforms.alignX,innerWidth<=600?.65:innerWidth<=1000?.58:.5);gl.drawArrays(gl.TRIANGLES,0,6);}};
-}
-let glass=null,textureReady=false;
-try{
- glass=makeRenderer($('#glass'),heroFragment);
- if(glass){const image=new Image();image.onload=()=>{const{gl,uniforms}=glass;const texture=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,texture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);gl.uniform2f(uniforms.imageSize,image.naturalWidth,image.naturalHeight);textureReady=true;$('#glass').style.opacity='1';startAnimation();};image.src='assets/hero.webp';}
-}catch{/* The photographs and all content remain usable without WebGL. */}
-function animate(timestamp){
- frame=0;if(paused||document.hidden||!needsCanvas())return;
- if(timestamp-lastTime<32){frame=requestAnimationFrame(animate);return;}
- animationTime+=Math.min((timestamp-lastTime)/1000||0,.05);lastTime=timestamp;
- pointer.x+=(pointer.tx-pointer.x)*.08;pointer.y+=(pointer.ty-pointer.y)*.08;
- if(heroVisible&&!hero.classList.contains('has-film')&&textureReady&&glass)glass.draw(animationTime);
- frame=requestAnimationFrame(animate);
-}
-function startAnimation(){if(!frame&&!paused&&!document.hidden&&needsCanvas())frame=requestAnimationFrame(animate);}
-const visibility=new IntersectionObserver(entries=>{heroVisible=entries[0].isIntersecting&&entries[0].intersectionRatio>.001;startAnimation();},{threshold:.001});visibility.observe(hero);
-document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;}else{lastTime=0;startAnimation();}});
-addEventListener('resize',()=>{glass?.resize();syncScroll();startAnimation();},{passive:true});
+addEventListener('resize',syncScroll,{passive:true});
 const reveal=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');reveal.unobserve(e.target);}}),{threshold:.12});
 document.querySelectorAll('.section-intro,.note-layout,.maison h2,.maison-bottom').forEach(e=>{e.classList.add('reveal');reveal.observe(e);});
 document.body.classList.add('js-ready');
