@@ -6,7 +6,7 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const fine = matchMedia('(pointer: fine)');
 let paused = reduced.matches, progress = 0, currentChapter = -1, frame = 0, lastTime = 0, animationTime = 0;
 let heroVisible = true;
-const hero = $('.hero'), journey = $('.journey'), stage = $('.journey-stage'), spray = $('.spray-scene');
+const hero = $('.hero'), journey = $('.journey'), stage = $('.journey-stage'), flight = $('.ingredient-flight'), flightStage = $('.flight-stage'), spray = $('.spray-scene');
 let language = 'de';
 const translations = {
   '.skip': 'Skip to the fragrance',
@@ -23,6 +23,11 @@ const translations = {
   '.chapter-track button:nth-child(2)': '<span>02</span> Heart<span class="track-line"></span>',
   '.chapter-track button:nth-child(3)': '<span>03</span> Base<span class="track-line"></span>',
   '.journey-hint': 'Every scroll reveals another facet.',
+  '.flight-caption .eyebrow': 'FROM NATURE TO FRAGRANCE',
+  '.flight-caption h2': 'From nature<br><em>comes VESPER.</em>',
+  '.flight-footer>span:nth-child(1)': 'BERGAMOT',
+  '.flight-footer>span:nth-child(2)': 'IRIS',
+  '.flight-footer>span:nth-child(3)': 'CEDARWOOD',
   '.spray-copy .eyebrow': 'THE MOMENT IT MEETS SKIN',
   '#spray-title': 'One pulse.<br><em>One feeling.</em>',
   '.spray-copy p:last-child': 'A fine mist on skin. A feeling that stays.',
@@ -50,6 +55,8 @@ const ariaTranslations = {
   '.hero-media': { 'aria-label': 'Glass perfume bottle with amber fragrance in violet backlight' },
   '.journey': { 'aria-label': 'How the fragrance unfolds' },
   '.chapter-track': { 'aria-label': 'Fragrance chapters' },
+  '.ingredient-flight': { 'aria-label': 'A camera journey through the fragrance notes' },
+  '.flight-frames': { 'aria-label': 'Bergamot peel, iris and cedarwood pass the camera in violet and gold light; the VESPER bottle appears at the end' },
   '.spray-photo': { 'aria-label': 'VESPER bottle with golden atomizer in violet light' },
   '.still-life': { 'aria-label': 'Iris, bergamot peel and cedarwood arranged as a sculptural fragrance composition' }
 };
@@ -120,6 +127,72 @@ function setupFilm(scene, video, isMotionPaused) {
   return { sync };
 }
 
+// A single shot is scrubbed in both directions; no crossfades between scenes.
+function setupScrollFilm(scene, video, isMotionPaused) {
+  let nearby = false, failed = false, requested = false, raf = 0;
+  let target = 0, displayed = 0, lastTick = 0;
+  const frameStep = 1 / 24;
+  const active = () => nearby && !document.hidden && !isMotionPaused() && !failed;
+  const duration = () => Number.isFinite(video.duration) ? Math.max(0, video.duration - frameStep) : 0;
+  function stop() {
+    cancelAnimationFrame(raf);
+    raf = 0;
+    lastTick = 0;
+    video.pause();
+  }
+  function schedule() {
+    if (active() && !raf && duration()) raf = requestAnimationFrame(tick);
+  }
+  function tick(now) {
+    raf = 0;
+    if (!active()) return;
+    const seconds = lastTick ? Math.min((now - lastTick) / 1000, .05) : 1 / 60;
+    lastTick = now;
+    const end = duration();
+    const wanted = target * end;
+    const blend = 1 - Math.exp(-seconds / .09);
+    displayed += (wanted - displayed) * blend;
+    if (Math.abs(wanted - displayed) < frameStep) displayed = wanted;
+    // Only one seek may be outstanding; seeked resumes toward the latest target.
+    if (!video.seeking && Math.abs(video.currentTime - displayed) >= frameStep / 2) {
+      video.currentTime = Math.max(0, Math.min(end, displayed));
+    }
+    if (!video.seeking && Math.abs(wanted - video.currentTime) >= frameStep / 2) schedule();
+  }
+  function sync() {
+    if (!active()) { stop(); return; }
+    if (!requested) {
+      requested = true;
+      video.muted = true;
+      video.src = video.dataset.src;
+      video.load();
+    }
+    schedule();
+  }
+  video.addEventListener('loadeddata', () => { scene.classList.add('has-scroll-film'); sync(); });
+  video.addEventListener('loadedmetadata', sync);
+  video.addEventListener('seeked', schedule);
+  video.addEventListener('error', () => {
+    failed = true;
+    stop();
+    scene.classList.remove('has-scroll-film');
+  });
+  new IntersectionObserver(entries => {
+    nearby = entries[0].isIntersecting;
+    sync();
+  }, { rootMargin: '100% 0px', threshold: 0 }).observe(scene);
+  document.addEventListener('visibilitychange', sync);
+  return {
+    sync,
+    setProgress(value) {
+      target = Math.max(0, Math.min(1, value));
+      sync();
+    }
+  };
+}
+
+const scrollFilm = setupScrollFilm(flight, $('#flight-film'), () => paused);
+
 const films = [
  setupFilm(hero, $('#hero-film'), () => paused),
  setupFilm(stage, $('#materials-film'), () => paused),
@@ -152,6 +225,21 @@ function syncScroll() {
   $('.journey-image').style.transform=`scale(${1.12+progress*.15}) translate(${(progress-.5)*-4}%,${Math.sin(progress*Math.PI)*3}%)`;
   $('.journey-image').style.filter=`hue-rotate(${(progress-.4)*20}deg)`;
  }
+ syncFlight();
+}
+function smooth(a,b,x){const t=clamp((x-a)/(b-a));return t*t*(3-2*t);}
+function syncFlight(){
+ const rect=flight.getBoundingClientRect();
+ const span=Math.max(1,flight.offsetHeight-flightStage.offsetHeight);
+ const p=clamp(-rect.top/span);
+ scrollFilm.setProgress(p);
+ if(!paused){
+  const caption=flight.querySelector('.flight-caption');
+  const reveal=smooth(.78,.96,p);
+  caption.style.opacity=String(reveal);
+  caption.style.transform=`translateY(${(1-reveal)*26}px)`;
+ }
+ flight.querySelector('.flight-line i').style.transform=`scaleX(${p})`;
 }
 let scrollPending=false;
 addEventListener('scroll',()=>{if(!scrollPending){scrollPending=true;requestAnimationFrame(()=>{syncScroll();scrollPending=false;});}}, {passive:true});
