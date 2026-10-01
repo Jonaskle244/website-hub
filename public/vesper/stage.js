@@ -17,9 +17,9 @@ const S = {
   data: null, i: 0, busy: false, locked: true, film: false, mode: 'film',
   listeners: new Set(),
 };
-const ids = () => S.data.stations.map(s => s.id);
-const station = i => S.data.stations[i];
-const last = () => S.data.stations.length - 1;
+const ids = () => S.data ? S.data.stations.map(s => s.id) : [];
+const station = i => S.data?.stations[i];
+const last = () => S.data ? S.data.stations.length - 1 : 0;
 const frame = () => 1 / S.data.fps;
 
 // ---------- Darstellung ----------
@@ -139,7 +139,7 @@ async function travel(to) {
 }
 
 function step(dir) {
-  if (S.busy) return;
+  if (S.busy || !S.data) return;
   if (dir > 0 && S.i === last()) { release(true); return; }
   travel(S.i + dir);
 }
