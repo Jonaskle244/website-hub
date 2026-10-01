@@ -2,7 +2,6 @@
 *{box-sizing:border-box}
 html{scroll-padding-top:0}
 body{margin:0;background:var(--ink)}
-html.locked,html.locked body{overflow:hidden;overscroll-behavior:none;height:100%}
 button,a{-webkit-tap-highlight-color:transparent}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
@@ -17,7 +16,7 @@ h1,h2,h3{font-family:Georgia,'Times New Roman',serif;font-weight:400;letter-spac
 em{font-weight:400;color:#d8c3de}
 
 /* ---------- Kopfzeile ---------- */
-header{position:absolute;inset:0 0 auto;z-index:30;padding:28px 4.5%;display:flex;align-items:center;gap:36px;border-bottom:1px solid var(--line)}
+header{position:fixed;inset:0 0 auto;z-index:30;padding:24px 4.5% 30px;display:flex;align-items:center;gap:36px;background:linear-gradient(rgba(12,6,16,.62),rgba(12,6,16,0))}
 .wordmark{font-family:Georgia,serif;font-size:30px;letter-spacing:.15em;line-height:1}
 .wordmark span{display:block;font:10px Arial,sans-serif;letter-spacing:.24em;margin-top:9px}
 header nav{display:flex;gap:34px;font-size:14px;margin-left:auto}
@@ -31,9 +30,9 @@ header nav a:hover{color:var(--gold)}
 .motion span{font-size:17px}
 
 /* ---------- Bühne ---------- */
-.stage{position:relative;height:100svh;min-height:560px;overflow:hidden;background:#140b18;isolation:isolate}
-.film-box{position:absolute;left:0;top:0;transform-origin:0 0;transition:transform 1.3s var(--ease),opacity .25s;z-index:0}
-.stage.cut .film-box{opacity:0}
+.stage-track{position:relative}
+.stage{position:sticky;top:0;height:100svh;min-height:560px;overflow:hidden;background:#140b18;isolation:isolate}
+.film-box{position:absolute;left:0;top:0;transform-origin:0 0;z-index:0;will-change:transform}
 .film-poster,.film{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
 .film{opacity:0}
 .film.is-shown{opacity:1}
@@ -60,9 +59,9 @@ header nav a:hover{color:var(--gold)}
 
 /* Szenen */
 .scenes{position:absolute;inset:0;z-index:3;pointer-events:none}
-.scene{position:absolute;inset:0;padding:0 9%;display:flex;flex-direction:column;justify-content:center;opacity:0;visibility:hidden;transition:opacity .45s,visibility 0s .45s}
+.scene{position:absolute;inset:0;padding:0 9%;display:flex;flex-direction:column;justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
 .scene.is-on{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .6s,visibility 0s}
-.scene > *{transition:transform 1s var(--ease) var(--d,0s),opacity .8s var(--d,0s)}
+.scene > *{transition:transform .8s var(--ease) var(--d,0s),opacity .6s var(--d,0s)}
 .scene:not(.is-on) > *{transform:translateY(26px);opacity:0}
 .anchor{position:absolute;top:0}
 
@@ -174,7 +173,8 @@ footer>div{display:flex;flex-direction:column;gap:10px;font-size:12px;color:#baa
 footer>span{font-size:11px;letter-spacing:.1em;white-space:nowrap}
 
 /* ---------- Statischer Modus: Pause, reduzierte Bewegung, kein JS/Film ---------- */
-html.static .stage,html:not(:has(body.js-ready)) .stage{height:auto;min-height:0;overflow:visible}
+html.static .stage,html:not(:has(body.js-ready)) .stage{position:relative;height:auto;min-height:0;overflow:visible}
+html.static header{position:absolute;background:none}
 html.static .film-box,html.static .mist,html.static .stage-shade,html.static .stations,html.static .stage-hint{display:none}
 html.static .scenes{position:static}
 html.static .scene{position:relative;inset:auto;min-height:100svh;opacity:1;visibility:visible;pointer-events:auto;padding-top:130px;padding-bottom:90px;background:linear-gradient(90deg,rgba(10,5,14,.85),rgba(10,5,14,.35)),linear-gradient(0deg,rgba(10,5,14,.8),rgba(10,5,14,0) 50%),var(--poster) center/cover}

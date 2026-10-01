@@ -6,7 +6,7 @@ const EN = {
   skip: 'Skip the film journey', home: 'Vesper – back to the beginning', nav: 'Main navigation', lang: 'Choose language',
   navScent: 'The fragrance', navNotes: 'The composition', navHouse: 'The house <span aria-hidden="true">↗</span>',
   stage: 'A film journey through L’Heure Bleue', stations: 'Moments of the film journey', hint: 'Scroll',
-  startEyebrow: 'PARFUMS DE CARACTÈRE · N° 01', startCopy: 'A journey in twelve moments. Scroll, and the film moves one step further.',
+  startEyebrow: 'PARFUMS DE CARACTÈRE · N° 01', startCopy: 'A journey in twelve moments. Scroll slowly, or rush straight through.',
   passageSr: 'Bergamot, iris and cedarwood drift past.', w1: 'BERGAMOT', w2: 'IRIS', w3: 'CEDARWOOD',
   titleEyebrow: 'EXTRAIT DE PARFUM · 50 ML', title: 'For the<br><em>In-Between.</em>', titleCopy: 'No longer day. Not yet night.<br>A moment that lingers on skin.',
   anatomyEyebrow: 'ANATOMY OF A FLACON',
