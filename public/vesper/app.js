@@ -121,7 +121,7 @@ function setupFilm(scene, video, isMotionPaused) {
 function setupScrollFilm(scene, video, isMotionPaused) {
   let nearby = false, failed = false, requested = false, raf = 0;
   let target = 0, displayed = 0, lastTick = 0;
-  const frameStep = 1 / 24;
+  const frameStep = 1 / 48;
   const active = () => nearby && !document.hidden && !isMotionPaused() && !failed;
   const duration = () => Number.isFinite(video.duration) ? Math.max(0, video.duration - frameStep) : 0;
   function stop() {
@@ -133,35 +133,40 @@ function setupScrollFilm(scene, video, isMotionPaused) {
   function schedule() {
     if (active() && !raf && duration()) raf = requestAnimationFrame(tick);
   }
+  // Only one seek may be outstanding; seeked immediately continues toward the latest position.
+  function seek() {
+    if (video.seeking || !active() || Math.abs(video.currentTime - displayed) < frameStep / 2) return;
+    video.currentTime = Math.max(0, Math.min(duration(), displayed));
+  }
   function tick(now) {
     raf = 0;
-    if (!active()) return;
+    if (!active()) { lastTick = 0; return; }
     const seconds = lastTick ? Math.min((now - lastTick) / 1000, .05) : 1 / 60;
     lastTick = now;
-    const end = duration();
-    const wanted = target * end;
-    const blend = 1 - Math.exp(-seconds / .09);
-    displayed += (wanted - displayed) * blend;
-    if (Math.abs(wanted - displayed) < frameStep) displayed = wanted;
-    // Only one seek may be outstanding; seeked resumes toward the latest target.
-    if (!video.seeking && Math.abs(video.currentTime - displayed) >= frameStep / 2) {
-      video.currentTime = Math.max(0, Math.min(end, displayed));
-    }
-    if (!video.seeking && Math.abs(wanted - video.currentTime) >= frameStep / 2) schedule();
+    const wanted = target * duration();
+    displayed += (wanted - displayed) * (1 - Math.exp(-seconds / .09));
+    if (Math.abs(wanted - displayed) < frameStep / 2) displayed = wanted;
+    seek();
+    // Keep easing while a seek is in flight; sleep once the shown frame matches the target.
+    if (displayed !== wanted || video.seeking) schedule();
+    else lastTick = 0;
+  }
+  function load() {
+    requested = true;
+    video.muted = true;
+    // Buffer the whole shot early so later seeks never wait for the network.
+    video.preload = 'auto';
+    video.src = video.dataset.src;
+    video.load();
   }
   function sync() {
     if (!active()) { stop(); return; }
-    if (!requested) {
-      requested = true;
-      video.muted = true;
-      video.src = video.dataset.src;
-      video.load();
-    }
+    if (!requested) load();
     schedule();
   }
   video.addEventListener('loadeddata', () => { scene.classList.add('has-scroll-film'); sync(); });
   video.addEventListener('loadedmetadata', sync);
-  video.addEventListener('seeked', schedule);
+  video.addEventListener('seeked', () => { seek(); schedule(); });
   video.addEventListener('error', () => {
     failed = true;
     stop();
