@@ -11,7 +11,7 @@ const root = document.documentElement;
 
 // Filmkoordinaten (1280×720): wohin der Ausschnitt schaut, wenn das Bild breiter ist als der Schirm.
 const FOCUS = { start: 520, passage: 700, title: 870, anatomy: 860, pulse: 740, 'skin-1': 700, 'skin-2': 700, 'skin-3': 700, origin: 640, notes: 640, finale: 870 };
-const DATA_URL = 'stations.json?v=11';
+const DATA_URL = 'stations.json?v=14';
 const HOLD = .75;           // Haltezone je Station in Bildschirmhöhen
 const PX_PER_SEC = .55;     // Fahrzone: Bildschirmhöhen je Filmsekunde
 const ease = k => k * k * (3 - 2 * k);
@@ -26,7 +26,7 @@ function layout() {
   S.zones = S.st.map((s, i) => {
     if (i > 0) {
       const dt = s.t - S.st[i - 1].t;
-      y += dt > .02 ? Math.min(1.6, Math.max(.6, dt * PX_PER_SEC)) * vh : .45 * vh;
+      y += dt > .02 ? Math.min(2.4, Math.max(.6, dt * PX_PER_SEC)) * vh : .45 * vh;
     }
     const z = { a: y, b: y + HOLD * vh };
     y = z.b;
