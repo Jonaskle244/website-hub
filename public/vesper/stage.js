@@ -12,8 +12,8 @@ const root = document.documentElement;
 // Filmkoordinaten (1280×720): wohin der Ausschnitt schaut, wenn das Bild breiter ist als der Schirm.
 const FOCUS = { start: 520, passage: 700, title: 870, anatomy: 860, pulse: 740, 'skin-1': 700, 'skin-2': 700, 'skin-3': 700, origin: 640, notes: 640, finale: 870 };
 const DATA_URL = 'stations.json?v=11';
-const HOLD = .5;            // Haltezone je Station in Bildschirmhöhen
-const PX_PER_SEC = .42;     // Fahrzone: Bildschirmhöhen je Filmsekunde
+const HOLD = .75;           // Haltezone je Station in Bildschirmhöhen
+const PX_PER_SEC = .55;     // Fahrzone: Bildschirmhöhen je Filmsekunde
 const ease = k => k * k * (3 - 2 * k);
 
 const S = { data: null, st: [], zones: [], total: 0, at: 0, seg: 0, k: 0, mode: 'film', film: false, listeners: new Set(), lastY: 0, dir: 1 };
@@ -26,7 +26,7 @@ function layout() {
   S.zones = S.st.map((s, i) => {
     if (i > 0) {
       const dt = s.t - S.st[i - 1].t;
-      y += dt > .02 ? Math.min(1.4, Math.max(.45, dt * PX_PER_SEC)) * vh : .28 * vh;
+      y += dt > .02 ? Math.min(1.6, Math.max(.6, dt * PX_PER_SEC)) * vh : .45 * vh;
     }
     const z = { a: y, b: y + HOLD * vh };
     y = z.b;
@@ -137,7 +137,7 @@ function update() {
 // hängen (RELEASE_SAME Pixel Widerstand); eine neue Geste nach kurzer Pause löst sofort
 // (RELEASE_FRESH). Wer kräftig weiterscrollt, drückt durch und rauscht durch die Reise.
 const RELEASE_SAME = 200, RELEASE_FRESH = 16, QUIET = 200;
-const G = { goal: null, raf: 0, last: 0, detent: null, lastWheel: 0, set: -1, settle: 0, prevMag: 0 };
+const G = { goal: null, raf: 0, last: 0, detent: null, lastWheel: 0, set: -1, settle: 0, prevMag: 0, tau: .11, input: null, magnet: 0, mpos: null };
 const centers = () => S.st.map((_, i) => holdCenter(i));
 function glide(now) {
   G.raf = 0;
@@ -148,23 +148,89 @@ function glide(now) {
   const goal = Math.max(0, Math.min(max, G.goal));
   // Ziel erreicht oder Browser rundet auf halbe Pixel und kommt nicht näher → fertig
   if (Math.abs(goal - y) < 1 || (G.prevY !== undefined && Math.abs(y - G.prevY) < .01 && Math.abs(goal - y) < 3)) {
-    G.last = 0; G.prevY = undefined; return;
+    if (!G.spring || Math.abs(G.v || 0) < 25) { G.last = 0; G.prevY = undefined; G.sy = undefined; G.v = 0; return; }
   }
   G.prevY = y;
-  const next = y + (goal - y) * (1 - Math.exp(-dt / .11));
+  let next;
+  if (G.spring) {
+    // Kritisch gedämpfte Feder: sanfter Anlauf, Geschwindigkeit bleibt über mehrere Raster erhalten
+    const w = G.spring, steps = Math.ceil(dt / (1 / 120));
+    let pos = G.sy ?? y, v = G.v || 0;
+    for (let k = 0; k < steps; k++) { const h = dt / steps; v += (w * w * (goal - pos) - 2 * w * v) * h; pos += v * h; }
+    G.v = v; G.sy = pos; next = pos;
+    if (Math.abs(goal - pos) < .8 && Math.abs(v) < 25) { G.sy = undefined; G.v = 0; next = goal; }
+  } else next = y + (goal - y) * (1 - Math.exp(-dt / G.tau));
   G.set = Math.round(next);
   scrollTo(0, next);
   G.raf = requestAnimationFrame(glide);
 }
 const kick = () => { if (!G.raf) G.raf = requestAnimationFrame(glide); };
-function goTo(i) { G.detent = { i, dir: 0, pull: 0, need: RELEASE_FRESH }; G.goal = centers()[i]; kick(); }
+function goTo(i, tau = .11, spring = 0) { G.detent = { i, dir: 0, pull: 0, need: RELEASE_FRESH }; G.tau = tau; G.spring = spring; G.goal = centers()[i]; kick(); }
 
+// ---------- Eingabegerät ----------
+// Pixelgenaue Trackpad-Ereignisse haben in Chrome/Safari wheelDeltaY = −3·deltaY; Mausraster
+// Vielfache von 120; Firefox meldet Mäuse in Zeilen. Gilt pro Geste (bis 300 ms Ruhe).
+function inputKind(e) {
+  if (window.__vesperInput) return window.__vesperInput; // nur für Tests
+  if (e.deltaMode === 1) return 'mouse';
+  const w = e.wheelDeltaY;
+  if (w && w % 120 === 0 && w !== -3 * e.deltaY && !e.deltaX) return 'mouse';
+  return 'trackpad';
+}
 function onWheel(e) {
   if (S.mode !== 'film' || e.ctrlKey || !S.st.length) return;
+  const now = performance.now();
+  if (!G.input || now - G.lastWheel > 300) G.input = inputKind(e);
+  if (G.input === 'mouse') onMouseWheel(e, now); else onTrackpadWheel(e);
+}
+
+// ---------- Maus: weich gekoppelt (Lenis-Prinzip) ----------
+// Das Rad verschiebt nur ein Ziel; die Seite gleitet gedämpft hinterher. Nach dem
+// letzten Raster zieht ein sanfter Magnet zur nächstgelegenen Station.
+// Die Maus rechnet in Stationen statt in Pixeln: ein Raster (100 px) = ¼ Station,
+// egal wie lang die Fahrt dazwischen ist – so fühlt sich jede Station gleich an.
+const NOTCH = .25, MOUSE_SPRING = 8, MAGNET_DELAY = 450, MAGNET_SPRING = 5.5;
+function posToY(pos) {
+  const cs = centers(), i = Math.max(0, Math.min(cs.length - 1, Math.floor(pos))), f = pos - i;
+  return i >= cs.length - 1 ? cs[cs.length - 1] : cs[i] + (cs[i + 1] - cs[i]) * f;
+}
+function yToPos(y) {
+  const cs = centers();
+  if (y <= cs[0]) return 0;
+  for (let i = 0; i < cs.length - 1; i++) if (y <= cs[i + 1]) return i + (y - cs[i]) / (cs[i + 1] - cs[i]);
+  return cs.length - 1;
+}
+function onMouseWheel(e, now) {
+  const raw = e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? innerHeight : 1);
+  if (!raw) return;
+  const top = trackTop(), cs = centers(), last = cs.length - 1;
+  const cur = G.goal ?? scrollY;
+  G.lastWheel = now; G.prevMag = Math.abs(raw);
+  clearTimeout(G.settle); clearTimeout(G.magnet);
+  // Außerhalb der Bühne oder über die letzte/erste Station hinaus: normal scrollen
+  if (cur > top + S.total + 1 || cur < top - 1 || (raw > 0 && cur >= cs[last] - .5) || (raw < 0 && cur <= cs[0] + .5)) { G.goal = null; G.detent = null; G.mpos = null; return; }
+  e.preventDefault();
+  if (G.mpos == null || G.goal === null) G.mpos = yToPos(cur);
+  // Beschleunigte Raster (z. B. 200 px) zählen anteilig, aber höchstens eine Station je Ereignis
+  G.mpos = Math.max(0, Math.min(last, G.mpos + Math.sign(raw) * Math.min(1, NOTCH * Math.abs(raw) / 100)));
+  G.detent = null; G.spring = MOUSE_SPRING;
+  G.goal = posToY(G.mpos);
+  kick();
+  G.magnet = setTimeout(() => {
+    if (G.input !== 'mouse' || G.goal === null) return;
+    const i = clampI(Math.round(G.mpos));
+    G.mpos = i;
+    goTo(i, .11, MAGNET_SPRING);
+  }, MAGNET_DELAY);
+}
+
+// ---------- Trackpad: Rasten (unverändert aus V9.2) ----------
+function onTrackpadWheel(e) {
   let d = e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? innerHeight : 1);
   const dir = Math.sign(d);
   if (!dir) return;
   const top = trackTop(), end = top + S.total, cur = G.goal ?? scrollY;
+  G.tau = .11; G.spring = 0; G.sy = undefined; G.v = 0;
   if (cur > end + 1 || cur < top - 1) { G.goal = null; G.detent = null; return; } // außerhalb: nativ
   const now = performance.now(), fresh = now - G.lastWheel > QUIET;
   G.lastWheel = now;
@@ -221,7 +287,7 @@ function onScroll() {
   if (y !== S.lastY) S.dir = y > S.lastY ? 1 : -1;
   S.lastY = y;
   // Fremde Bewegung (Scrollleiste, Taste, Touch) → eigene Gleitfahrt abbrechen
-  if (G.raf && Math.abs(y - G.set) > 3) { cancelAnimationFrame(G.raf); G.raf = 0; G.goal = null; G.detent = null; }
+  if (G.raf && Math.abs(y - G.set) > 3) { cancelAnimationFrame(G.raf); G.raf = 0; G.goal = null; G.detent = null; G.mpos = null; G.sy = undefined; G.v = 0; }
   if (!G.raf && G.goal !== null && Math.abs(y - G.goal) > 3) { G.goal = null; G.detent = null; }
   update();
   if (S.at >= 0 && !G.raf) anchor = { i: S.at, y };
@@ -309,7 +375,7 @@ async function init() {
 window.VesperStage = {
   init, setMode, jumpTo, filmToScreen,
   on(fn) { S.listeners.add(fn); },
-  get state() { return { at: S.at, active, id: active >= 0 ? S.st[active]?.id : null, seg: S.seg, k: +S.k.toFixed(3), film: S.film, mode: S.mode, t: film.currentTime, target, total: S.total }; },
+  get state() { return { input: G.input, at: S.at, active, id: active >= 0 ? S.st[active]?.id : null, seg: S.seg, k: +S.k.toFixed(3), film: S.film, mode: S.mode, t: film.currentTime, target, total: S.total }; },
   get stations() { return S.st; },
   holdCenter,
 };
