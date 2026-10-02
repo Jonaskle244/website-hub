@@ -296,9 +296,9 @@ function onScroll() {
   if (from) { clearTimeout(quiet); quiet = setTimeout(snap, 160); }
 }
 
-// ---------- Automatik: die ganze Reise in ~12,5 s, gleichmäßig durchgescrollt ----------
+// ---------- Automatik: die ganze Reise in ~21 s, gleichmäßig durchgescrollt ----------
 // Jede Eingabe (Rad, Touch, Taste, Stationspunkt, Scrollleiste) übernimmt sofort wieder.
-const AUTO_SECONDS = 12.5;
+const AUTO_SECONDS = 21;
 const P = { on: false, raf: 0, last: 0, y: 0, btn: null };
 function renderPlay() {
   if (!P.btn) return;
