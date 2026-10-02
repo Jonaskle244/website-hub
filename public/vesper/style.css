@@ -155,6 +155,9 @@ header nav a:hover{color:var(--gold)}
 .stations button::before{content:'';width:6px;height:6px;border-radius:50%;background:rgba(244,236,229,.4);transition:transform .3s,background .3s}
 .stations button[aria-current]::before{background:var(--gold-hi);transform:scale(1.7)}
 .stations button:hover::before{background:#fff}
+.stations .stage-play{width:28px;height:28px;margin-top:12px;border:1px solid var(--line);border-radius:50%;background:rgba(23,13,29,.6);color:var(--gold-hi);font-size:10px;line-height:1;transition:border-color .3s,background .3s}
+.stations .stage-play::before{content:none}
+.stations .stage-play:hover{border-color:var(--gold-hi);background:rgba(23,13,29,.9)}
 .stage-hint{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);z-index:5;margin:0;display:flex;flex-direction:column;align-items:center;gap:12px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;transition:opacity .5s}
 .stage-hint i{width:1px;height:42px;background:linear-gradient(var(--gold-hi),transparent);transform-origin:top}
 .stage[data-station=start] .stage-hint i{animation:hint 2.2s ease-in-out infinite}
@@ -252,6 +255,7 @@ html.static .pin text{opacity:1}
  .scene-finale{justify-content:flex-start;padding-top:140px}
  .stations{right:6px}
  .stations button{width:22px;height:22px}
+ .stations .stage-play{width:22px;height:22px;font-size:8px}
  .stage-hint{bottom:86px}
  .motion{right:14px;bottom:14px;padding:9px 13px;font-size:11px}
  .maison{padding:85px 7% 70px}

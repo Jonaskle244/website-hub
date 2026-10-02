@@ -179,6 +179,7 @@ function inputKind(e) {
 }
 function onWheel(e) {
   if (S.mode !== 'film' || e.ctrlKey || !S.st.length) return;
+  stopPlay();
   const now = performance.now();
   if (!G.input || now - G.lastWheel > 300) G.input = inputKind(e);
   if (G.input === 'mouse') onMouseWheel(e, now); else onTrackpadWheel(e);
@@ -286,6 +287,7 @@ function onScroll() {
   const y = scrollY;
   if (y !== S.lastY) S.dir = y > S.lastY ? 1 : -1;
   S.lastY = y;
+  if (P.on && Math.abs(y - P.y) > 3) stopPlay(); // Scrollleiste o. Ä. übernimmt
   // Fremde Bewegung (Scrollleiste, Taste, Touch) → eigene Gleitfahrt abbrechen
   if (G.raf && Math.abs(y - G.set) > 3) { cancelAnimationFrame(G.raf); G.raf = 0; G.goal = null; G.detent = null; G.mpos = null; G.sy = undefined; G.v = 0; }
   if (!G.raf && G.goal !== null && Math.abs(y - G.goal) > 3) { G.goal = null; G.detent = null; }
@@ -294,9 +296,49 @@ function onScroll() {
   if (from) { clearTimeout(quiet); quiet = setTimeout(snap, 160); }
 }
 
+// ---------- Automatik: die ganze Reise in ~12,5 s, gleichmäßig durchgescrollt ----------
+// Jede Eingabe (Rad, Touch, Taste, Stationspunkt, Scrollleiste) übernimmt sofort wieder.
+const AUTO_SECONDS = 12.5;
+const P = { on: false, raf: 0, last: 0, y: 0, btn: null };
+function renderPlay() {
+  if (!P.btn) return;
+  const en = root.lang === 'en';
+  const label = P.on ? (en ? 'Pause the journey' : 'Reise anhalten') : (en ? 'Play the journey automatically' : 'Reise automatisch abspielen');
+  P.btn.textContent = P.on ? 'Ⅱ' : '▶';
+  P.btn.setAttribute('aria-label', label); P.btn.title = label;
+}
+function playTick(now) {
+  P.raf = 0;
+  if (!P.on) return;
+  const dt = P.last ? Math.min((now - P.last) / 1000, .05) : 1 / 60;
+  P.last = now;
+  const a = holdCenter(0), b = holdCenter(S.st.length - 1);
+  P.y = Math.min(b, P.y + (b - a) * dt / AUTO_SECONDS);
+  scrollTo(0, P.y);
+  if (P.y >= b) { setPlay(false); return; }
+  P.raf = requestAnimationFrame(playTick);
+}
+function setPlay(on) {
+  if (on === P.on) return;
+  P.on = on;
+  cancelAnimationFrame(P.raf); P.raf = 0; P.last = 0;
+  if (on) {
+    // Laufende Gleitfahrt/Rasten abbrechen, damit nichts dagegen arbeitet
+    cancelAnimationFrame(G.raf); G.raf = 0; G.goal = null; G.detent = null; G.mpos = null; G.sy = undefined; G.v = 0;
+    clearTimeout(G.settle); clearTimeout(G.magnet); clearTimeout(quiet); from = null;
+    const a = holdCenter(0), b = holdCenter(S.st.length - 1);
+    P.y = scrollY >= b - 2 || scrollY < a - 2 ? a : scrollY; // am Ende oder außerhalb → von vorn
+    if (P.y !== scrollY) scrollTo(0, P.y);
+    P.raf = requestAnimationFrame(playTick);
+  }
+  renderPlay();
+}
+const stopPlay = () => { if (P.on) setPlay(false); };
+
 function jumpTo(id) {
   const i = S.st.findIndex(s => s.id === id);
   if (i < 0) return;
+  stopPlay();
   anchor = { i, y: holdCenter(i) };
   if (S.mode !== 'film') { const sc = $$('.scene').find(s => s.dataset.on.split(' ').includes(id)); sc && sc.scrollIntoView(); return; }
   if (Math.abs(i - Math.round(S.at >= 0 ? S.at : S.seg + S.k)) > 3) { G.goal = null; scrollTo(0, holdCenter(i)); G.detent = { i, dir: 0, pull: 0, need: RELEASE_FRESH }; }
@@ -306,6 +348,7 @@ function jumpTo(id) {
 // ---------- Modus: Film / statisch ----------
 function setMode(mode) {
   if (mode === S.mode) return;
+  stopPlay();
   const id = S.st[Math.max(0, S.at >= 0 ? S.at : S.seg)]?.id || 'start';
   S.mode = mode;
   root.classList.toggle('static', mode !== 'film');
@@ -333,6 +376,11 @@ async function init() {
     b.addEventListener('click', () => jumpTo(s.id));
     nav.append(b);
   });
+  P.btn = document.createElement('button');
+  P.btn.type = 'button'; P.btn.className = 'stage-play';
+  P.btn.addEventListener('click', () => setPlay(!P.on));
+  nav.append(P.btn);
+  renderPlay();
   film.addEventListener('loadeddata', () => {
     S.film = true;
     film.classList.add('is-shown');
@@ -346,9 +394,9 @@ async function init() {
   sizeBox(); layout();
   addEventListener('scroll', onScroll, { passive: true });
   addEventListener('wheel', onWheel, { passive: false });
-  addEventListener('keydown', e => { if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' ', 'Home', 'End'].includes(e.key)) userInput(); });
+  addEventListener('keydown', e => { if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' ', 'Home', 'End'].includes(e.key)) { stopPlay(); userInput(); } });
   addEventListener('pointerup', e => { if (e.pointerType === 'mouse') userInput(); });
-  addEventListener('touchstart', () => { touching = true; clearTimeout(quiet); }, { passive: true });
+  addEventListener('touchstart', () => { stopPlay(); touching = true; clearTimeout(quiet); }, { passive: true });
   addEventListener('touchend', () => { touching = false; userInput(); }, { passive: true });
   addEventListener('resize', () => {
     const i = Math.max(0, S.at);
@@ -373,9 +421,10 @@ async function init() {
 }
 
 window.VesperStage = {
-  init, setMode, jumpTo, filmToScreen,
+  init, setMode, jumpTo, filmToScreen, renderPlay,
+  play: on => setPlay(on ?? !P.on),
   on(fn) { S.listeners.add(fn); },
-  get state() { return { input: G.input, at: S.at, active, id: active >= 0 ? S.st[active]?.id : null, seg: S.seg, k: +S.k.toFixed(3), film: S.film, mode: S.mode, t: film.currentTime, target, total: S.total }; },
+  get state() { return { input: G.input, at: S.at, active, id: active >= 0 ? S.st[active]?.id : null, seg: S.seg, k: +S.k.toFixed(3), film: S.film, mode: S.mode, playing: P.on, t: film.currentTime, target, total: S.total }; },
   get stations() { return S.st; },
   holdCenter,
 };

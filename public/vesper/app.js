@@ -62,6 +62,7 @@ function applyLanguage(next, updateUrl) {
   document.title = META[language].title;
   $('meta[name="description"]').content = META[language].desc;
   renderMotion();
+  window.VesperStage?.renderPlay();
   try { localStorage.setItem('vesper-language', language); } catch {}
   if (updateUrl) { const u = new URL(location.href); if (language === 'en') u.searchParams.set('lang', 'en'); else u.searchParams.delete('lang'); history.replaceState(null, '', u); }
 }
