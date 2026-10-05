@@ -26,7 +26,7 @@ function layout() {
   S.zones = S.st.map((s, i) => {
     if (i > 0) {
       const dt = s.t - S.st[i - 1].t;
-      y += dt > .02 ? Math.min(2.4, Math.max(.6, dt * PX_PER_SEC)) * vh : .45 * vh;
+      y += dt > .02 ? Math.min(4.5, Math.max(.6, dt * PX_PER_SEC)) * vh : .45 * vh;
     }
     const z = { a: y, b: y + HOLD * vh };
     y = z.b;
@@ -47,6 +47,27 @@ function locate(p) {
   return { at: z.length - 1, seg: z.length - 1, k: 0 };
 }
 const trackTop = () => track.getBoundingClientRect().top + scrollY;
+// Filmzeit an einer Seiten-Scrollposition (für das Tempolimit)
+function filmAt(y) {
+  const { at, seg, k } = locate(Math.min(S.total, Math.max(0, y - trackTop())));
+  if (at >= 0) return S.st[at].t;
+  const a = S.st[seg].t, b = S.st[Math.min(seg + 1, S.st.length - 1)].t;
+  return a + (b - a) * ease(Math.min(1, Math.max(0, k)));
+}
+// Tempolimit: Geführtes Scrollen (Rad, Trackpad, Einrasten, Play) lässt den Film in den
+// Action-Momenten (fallendes Holz, Kappe, Sprühstöße, fallende Zutaten) höchstens in Echtzeit
+// laufen, dazwischen (ruhige Einstellungen) bis zu dreimal so schnell. So bleibt nichts Sehenswertes
+// auf der Strecke, und die ruhigen Abschnitte ziehen nicht träge dahin.
+const ACTION = [[2.8, 5.6], [8.4, 10.2], [12.3, 13.4], [14.3, 15.3], [16.2, 20.6]];
+const RATE_ACTION = 1, RATE_CALM = 3;
+const filmRate = t => ACTION.some(([a, b]) => t >= a && t <= b) ? RATE_ACTION : RATE_CALM;
+function limitStep(y, next, dt) {
+  const f0 = filmAt(y), f1 = filmAt(next), room = filmRate(f0) * dt;
+  if (Math.abs(f1 - f0) <= room) return next;
+  let lo = 0, hi = 1; // Halbierung: größter Anteil des Schritts innerhalb des Limits
+  for (let k = 0; k < 14; k++) { const m = (lo + hi) / 2; if (Math.abs(filmAt(y + (next - y) * m) - f0) <= room) lo = m; else hi = m; }
+  return y + (next - y) * lo;
+}
 const holdCenter = i => trackTop() + (i === 0 ? 0 : (S.zones[i].a + S.zones[i].b) / 2);
 
 // ---------- Darstellung ----------
@@ -148,6 +169,7 @@ function glide(now) {
   const goal = Math.max(0, Math.min(max, G.goal));
   // Ziel erreicht oder Browser rundet auf halbe Pixel und kommt nicht näher → fertig
   if (Math.abs(goal - y) < 1 || (G.prevY !== undefined && Math.abs(y - G.prevY) < .01 && Math.abs(goal - y) < 3)) {
+    if (G.detent && G.detent.since === Infinity) G.detent.since = now;
     if (!G.spring || Math.abs(G.v || 0) < 25) { G.last = 0; G.prevY = undefined; G.sy = undefined; G.v = 0; return; }
   }
   G.prevY = y;
@@ -159,13 +181,18 @@ function glide(now) {
     for (let k = 0; k < steps; k++) { const h = dt / steps; v += (w * w * (goal - pos) - 2 * w * v) * h; pos += v * h; }
     G.v = v; G.sy = pos; next = pos;
     if (Math.abs(goal - pos) < .8 && Math.abs(v) < 25) { G.sy = undefined; G.v = 0; next = goal; }
-  } else next = y + (goal - y) * (1 - Math.exp(-dt / G.tau));
+  } else {
+    next = y + (goal - y) * (1 - Math.exp(-dt / G.tau));
+    if (Math.abs(next - y) < 1) next = y + Math.sign(goal - y); // Browser rundet Bruchteile weg – nicht davor stehen bleiben
+  }
+  const lim = G.free ? next : limitStep(y, next, dt);
+  if (lim !== next) { next = lim; if (G.spring) { G.sy = next; G.v = (next - y) / dt; } }
   G.set = Math.round(next);
   scrollTo(0, next);
   G.raf = requestAnimationFrame(glide);
 }
 const kick = () => { if (!G.raf) G.raf = requestAnimationFrame(glide); };
-function goTo(i, tau = .11, spring = 0) { G.detent = { i, dir: 0, pull: 0, need: RELEASE_FRESH, since: performance.now() }; G.tau = tau; G.spring = spring; G.goal = centers()[i]; kick(); }
+function goTo(i, tau = .11, spring = 0) { G.detent = { i, dir: 0, pull: 0, need: RELEASE_FRESH, since: Infinity }; G.tau = tau; G.spring = spring; G.goal = centers()[i]; kick(); }
 
 // ---------- Eingabegerät ----------
 // Pixelgenaue Trackpad-Ereignisse haben in Chrome/Safari wheelDeltaY = −3·deltaY; Mausraster
@@ -179,6 +206,7 @@ function inputKind(e) {
 }
 function onWheel(e) {
   if (S.mode !== 'film' || e.ctrlKey || !S.st.length) return;
+  G.free = false;
   stopPlay();
   const now = performance.now();
   if (!G.input || now - G.lastWheel > 300) G.input = inputKind(e);
@@ -226,12 +254,11 @@ function onMouseWheel(e, now) {
 }
 
 // ---------- Trackpad: Rasten mit Tempolimit ----------
-// Wie die Maus rechnet das Trackpad in Stationen statt in Pixeln: TP_PX Trackpad-Pixel = eine
-// Station, und der Film fährt höchstens TP_RATE Stationen pro Sekunde – ein kräftiger Wisch
-// fährt also gemächlich zur nächsten Station, statt in einem Wimpernschlag durchzurauschen.
-// Dort hält die Raste: DWELL ms schluckt sie jede Eingabe (Schwung rollt aus, Text ist zu sehen),
-// danach löst eine neue Geste sofort, anhaltendes Weiterscrollen nach RELEASE_SAME Pixeln.
-const TP_PX = 700, TP_RATE = .6, DWELL = 700;
+// Wie die Maus rechnet das Trackpad in Stationen statt in Pixeln (TP_PX Trackpad-Pixel = eine
+// Station, höchstens TP_RATE Stationen/s); wie schnell die Seite tatsächlich folgt, bestimmt das
+// Film-Tempolimit (FILM_RATE). An der Station hält die Raste: bis zur Ankunft und DWELL ms danach
+// schluckt sie jede Eingabe, dann löst eine neue Geste sofort, anhaltendes Scrollen nach RELEASE_SAME px.
+const TP_PX = 600, TP_RATE = 1.6, DWELL = 450;
 function onTrackpadWheel(e) {
   const d = e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? innerHeight : 1);
   const dir = Math.sign(d);
@@ -262,10 +289,10 @@ function onTrackpadWheel(e) {
   if (idx < 0 || idx > last) { G.goal = null; G.mpos = null; return; } // keine Station mehr → normal weiterscrollen
   e.preventDefault();
   G.mpos += dir * Math.min(mag / TP_PX, TP_RATE * dt);
-  if ((dir > 0 && G.mpos >= idx) || (dir < 0 && G.mpos <= idx)) { G.mpos = idx; G.detent = { i: idx, dir, pull: 0, need: RELEASE_SAME, since: now }; }
+  if ((dir > 0 && G.mpos >= idx) || (dir < 0 && G.mpos <= idx)) { G.mpos = idx; G.detent = { i: idx, dir, pull: 0, need: RELEASE_SAME, since: Infinity }; }
   G.goal = posToY(G.mpos); kick();
   // Kleiner Schubs, der zwischen zwei Stationen endet: nach der Pause gemächlich zur nächsten Station
-  if (!G.detent) G.settle = setTimeout(() => { if (!G.detent && G.goal !== null) { G.mpos = idx; goTo(idx, .3); } }, QUIET + 40);
+  if (!G.detent) G.settle = setTimeout(() => { if (!G.detent && G.goal !== null) { G.mpos = idx; goTo(idx, .16); } }, QUIET + 40);
 }
 
 // ---------- Touch, Tastatur, Scrollleiste: nativ scrollen, danach einrasten ----------
@@ -289,6 +316,7 @@ function snap() {
   }
   i = clampI(i);
   anchor = { i, y: holdCenter(i) };
+  G.free = false;
   goTo(i);
 }
 function onScroll() {
@@ -321,7 +349,7 @@ function playTick(now) {
   const dt = P.last ? Math.min((now - P.last) / 1000, .05) : 1 / 60;
   P.last = now;
   const a = holdCenter(0), b = holdCenter(S.st.length - 1);
-  P.y = Math.min(b, P.y + (b - a) * dt / AUTO_SECONDS);
+  P.y = Math.min(b, limitStep(P.y, P.y + (b - a) * dt / AUTO_SECONDS, dt));
   scrollTo(0, P.y);
   if (P.y >= b) { setPlay(false); return; }
   P.raf = requestAnimationFrame(playTick);
@@ -350,7 +378,7 @@ function jumpTo(id) {
   anchor = { i, y: holdCenter(i) };
   if (S.mode !== 'film') { const sc = $$('.scene').find(s => s.dataset.on.split(' ').includes(id)); sc && sc.scrollIntoView(); return; }
   if (Math.abs(i - Math.round(S.at >= 0 ? S.at : S.seg + S.k)) > 3) { G.goal = null; scrollTo(0, holdCenter(i)); G.detent = { i, dir: 0, pull: 0, need: RELEASE_FRESH }; }
-  else goTo(i);
+  else { goTo(i); G.free = true; } // Stationspunkt/Link: direkt hin, ohne Film-Tempolimit
 }
 
 // ---------- Modus: Film / statisch ----------
