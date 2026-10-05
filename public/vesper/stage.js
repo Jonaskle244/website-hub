@@ -165,7 +165,7 @@ function glide(now) {
   G.raf = requestAnimationFrame(glide);
 }
 const kick = () => { if (!G.raf) G.raf = requestAnimationFrame(glide); };
-function goTo(i, tau = .11, spring = 0) { G.detent = { i, dir: 0, pull: 0, need: RELEASE_FRESH }; G.tau = tau; G.spring = spring; G.goal = centers()[i]; kick(); }
+function goTo(i, tau = .11, spring = 0) { G.detent = { i, dir: 0, pull: 0, need: RELEASE_FRESH, since: performance.now() }; G.tau = tau; G.spring = spring; G.goal = centers()[i]; kick(); }
 
 // ---------- Eingabegerät ----------
 // Pixelgenaue Trackpad-Ereignisse haben in Chrome/Safari wheelDeltaY = −3·deltaY; Mausraster
@@ -225,39 +225,47 @@ function onMouseWheel(e, now) {
   }, MAGNET_DELAY);
 }
 
-// ---------- Trackpad: Rasten (unverändert aus V9.2) ----------
+// ---------- Trackpad: Rasten mit Tempolimit ----------
+// Wie die Maus rechnet das Trackpad in Stationen statt in Pixeln: TP_PX Trackpad-Pixel = eine
+// Station, und der Film fährt höchstens TP_RATE Stationen pro Sekunde – ein kräftiger Wisch
+// fährt also gemächlich zur nächsten Station, statt in einem Wimpernschlag durchzurauschen.
+// Dort hält die Raste: DWELL ms schluckt sie jede Eingabe (Schwung rollt aus, Text ist zu sehen),
+// danach löst eine neue Geste sofort, anhaltendes Weiterscrollen nach RELEASE_SAME Pixeln.
+const TP_PX = 700, TP_RATE = .6, DWELL = 700;
 function onTrackpadWheel(e) {
-  let d = e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? innerHeight : 1);
+  const d = e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? innerHeight : 1);
   const dir = Math.sign(d);
   if (!dir) return;
-  const top = trackTop(), end = top + S.total, cur = G.goal ?? scrollY;
-  G.tau = .11; G.spring = 0; G.sy = undefined; G.v = 0;
-  if (cur > end + 1 || cur < top - 1) { G.goal = null; G.detent = null; return; } // außerhalb: nativ
+  const top = trackTop(), end = top + S.total, cur = G.goal ?? scrollY, last = S.st.length - 1;
+  G.tau = .14; G.spring = 0; G.sy = undefined; G.v = 0;
+  if (cur > end + 1 || cur < top - 1) { G.goal = null; G.detent = null; G.mpos = null; return; } // außerhalb: nativ
   const now = performance.now(), fresh = now - G.lastWheel > QUIET;
+  const dt = fresh ? 1 / 60 : Math.min(now - G.lastWheel, 50) / 1000;
   G.lastWheel = now;
   const mag = Math.abs(d), decaying = !fresh && mag < G.prevMag * .985;
   G.prevMag = mag;
   clearTimeout(G.settle);
-  // Neue Geste oder Richtungswechsel: Raste löst fast sofort
-  if (G.detent && (fresh || dir !== G.detent.dir)) { G.detent.need = RELEASE_FRESH; G.detent.dir = dir; G.detent.pull = 0; }
   if (G.detent) {
-    // Ausrollender Schwung (immer kleinere Werte) drückt nicht durch – nur echtes Weiterscrollen
-    if (!decaying || G.detent.need === RELEASE_FRESH) G.detent.pull += mag;
-    if (G.detent.pull < G.detent.need) { e.preventDefault(); G.goal = centers()[G.detent.i] + dir * Math.min(36, G.detent.pull * .1); kick(); return; }
-    d = dir * Math.min(G.detent.pull - G.detent.need, 60);
-    G.detent = null;
+    const D = G.detent, resting = now - (D.since || 0) < DWELL;
+    // Neue Geste oder Richtungswechsel: Raste löst fast sofort (nach der Mindest-Ruhe)
+    if (fresh || dir !== D.dir) { D.need = RELEASE_FRESH; D.dir = dir; D.pull = 0; }
+    // Ausrollender Schwung (immer kleinere Werte) drückt nie durch – nur echtes Weiterscrollen
+    if (!resting && (!decaying || D.need === RELEASE_FRESH)) D.pull += mag;
+    if (resting || D.pull < D.need) {
+      e.preventDefault(); G.goal = centers()[D.i] + dir * Math.min(24, D.pull * .08); kick(); return;
+    }
+    G.mpos = D.i; G.detent = null;
   }
-  const cs = centers();
-  let idx = -1;
-  if (dir > 0) idx = cs.findIndex(c => c > cur + .5);
-  else for (let k = cs.length - 1; k >= 0; k--) if (cs[k] < cur - .5) { idx = k; break; }
-  if (idx < 0) { G.goal = null; return; } // keine Station mehr in dieser Richtung → normal weiterscrollen
+  if (G.mpos == null || G.goal === null) G.mpos = yToPos(cur);
+  // Nächste Station in Scrollrichtung
+  const idx = dir > 0 ? Math.floor(G.mpos + .001) + 1 : Math.ceil(G.mpos - .001) - 1;
+  if (idx < 0 || idx > last) { G.goal = null; G.mpos = null; return; } // keine Station mehr → normal weiterscrollen
   e.preventDefault();
-  let next = cur + d;
-  if ((dir > 0 && next >= cs[idx]) || (dir < 0 && next <= cs[idx])) { next = cs[idx]; G.detent = { i: idx, dir, pull: 0, need: RELEASE_SAME }; }
-  G.goal = next; kick();
-  // Kleiner Schubs, der zwischen zwei Stationen endet: nach der Pause zur nächsten Station
-  if (!G.detent) G.settle = setTimeout(() => { if (!G.detent && G.goal !== null) goTo(idx); }, QUIET + 40);
+  G.mpos += dir * Math.min(mag / TP_PX, TP_RATE * dt);
+  if ((dir > 0 && G.mpos >= idx) || (dir < 0 && G.mpos <= idx)) { G.mpos = idx; G.detent = { i: idx, dir, pull: 0, need: RELEASE_SAME, since: now }; }
+  G.goal = posToY(G.mpos); kick();
+  // Kleiner Schubs, der zwischen zwei Stationen endet: nach der Pause gemächlich zur nächsten Station
+  if (!G.detent) G.settle = setTimeout(() => { if (!G.detent && G.goal !== null) { G.mpos = idx; goTo(idx, .3); } }, QUIET + 40);
 }
 
 // ---------- Touch, Tastatur, Scrollleiste: nativ scrollen, danach einrasten ----------
