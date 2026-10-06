@@ -6,6 +6,8 @@ export function LanguageSwitch({ locale }: { locale: "de" | "en" }) {
   const pathname = usePathname();
   // The Night Brief starter is an English-only resource outside the portfolio.
   if (pathname.startsWith("/lab/")) return null;
+  // Das Agentur-Angebot gibt es nur auf Deutsch.
+  if (pathname.startsWith("/agenturen")) return null;
   const other = locale === "de" ? "en" : "de";
   const target = locale === "de" ? `/en${pathname === "/" ? "/" : pathname}` : pathname.replace(/^\/en(?=\/|$)/, "") || "/";
 

@@ -20,6 +20,8 @@ export function ProjectCard({ project, locale = "de" }: { project: Project; loca
         <img
           src={project.cover}
           alt={`${project.titel} — ${locale === "en" ? "cover" : "Cover"}`}
+          loading="lazy"
+          decoding="async"
           className="h-full w-full object-cover object-top opacity-90 transition-opacity duration-500 group-hover:opacity-100"
         />
 

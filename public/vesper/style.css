@@ -31,6 +31,8 @@ header nav a:hover{color:var(--gold)}
 
 /* ---------- Bühne ---------- */
 .stage-track{position:relative}
+/* Höhe der Filmstrecke vorab reservieren, bis stage.js sie aus stations.json setzt (sonst springt „Das Haus“ beim Laden nach unten). ≈ (Summe der Zonen + 1) × Bildschirmhöhe, bei geänderten Stationen nachrechnen. */
+@media (prefers-reduced-motion:no-preference){.vjs:not(.static) .stage-track{height:2570vh}}
 .stage{position:sticky;top:0;height:100svh;min-height:560px;overflow:hidden;background:#140b18;isolation:isolate}
 .film-box{position:absolute;left:0;top:0;transform-origin:0 0;z-index:0;will-change:transform}
 .film-poster,.film{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
