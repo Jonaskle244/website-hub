@@ -56,10 +56,10 @@ function filmAt(y) {
 }
 // Tempolimit: Geführtes Scrollen (Rad, Trackpad, Einrasten, Play) lässt den Film in den
 // Action-Momenten (fallendes Holz, Kappe, Sprühstöße, fallende Zutaten) höchstens in Echtzeit
-// laufen, dazwischen (ruhige Einstellungen) bis zu dreimal so schnell. So bleibt nichts Sehenswertes
+// laufen, dazwischen (ruhige Einstellungen) bis zu sechsmal so schnell. So bleibt nichts Sehenswertes
 // auf der Strecke, und die ruhigen Abschnitte ziehen nicht träge dahin.
 const ACTION = [[2.8, 5.6], [8.4, 10.2], [12.3, 13.4], [14.3, 15.3], [16.2, 20.6]];
-const RATE_ACTION = 1, RATE_CALM = 3;
+const RATE_ACTION = 1, RATE_CALM = 6;
 const filmRate = t => ACTION.some(([a, b]) => t >= a && t <= b) ? RATE_ACTION : RATE_CALM;
 function limitStep(y, next, dt) {
   const f0 = filmAt(y), f1 = filmAt(next), room = filmRate(f0) * dt;
@@ -157,7 +157,7 @@ function update() {
 // Jede Station ist eine Raste. Der Schwung derselben Geste bleibt an der nächsten Station
 // hängen (RELEASE_SAME Pixel Widerstand); eine neue Geste nach kurzer Pause löst sofort
 // (RELEASE_FRESH). Wer kräftig weiterscrollt, drückt durch und rauscht durch die Reise.
-const RELEASE_SAME = 200, RELEASE_FRESH = 16, QUIET = 200;
+const RELEASE_SAME = 140, RELEASE_FRESH = 16, QUIET = 200;
 const G = { goal: null, raf: 0, last: 0, detent: null, lastWheel: 0, set: -1, settle: 0, prevMag: 0, tau: .11, input: null, magnet: 0, mpos: null };
 const centers = () => S.st.map((_, i) => holdCenter(i));
 function glide(now) {
@@ -258,13 +258,13 @@ function onMouseWheel(e, now) {
 // Station, höchstens TP_RATE Stationen/s); wie schnell die Seite tatsächlich folgt, bestimmt das
 // Film-Tempolimit (FILM_RATE). An der Station hält die Raste: bis zur Ankunft und DWELL ms danach
 // schluckt sie jede Eingabe, dann löst eine neue Geste sofort, anhaltendes Scrollen nach RELEASE_SAME px.
-const TP_PX = 600, TP_RATE = 1.6, DWELL = 450;
+const TP_PX = 600, TP_RATE = 2.5, DWELL = 250;
 function onTrackpadWheel(e) {
   const d = e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? innerHeight : 1);
   const dir = Math.sign(d);
   if (!dir) return;
   const top = trackTop(), end = top + S.total, cur = G.goal ?? scrollY, last = S.st.length - 1;
-  G.tau = .14; G.spring = 0; G.sy = undefined; G.v = 0;
+  G.tau = .1; G.spring = 0; G.sy = undefined; G.v = 0;
   if (cur > end + 1 || cur < top - 1) { G.goal = null; G.detent = null; G.mpos = null; return; } // außerhalb: nativ
   const now = performance.now(), fresh = now - G.lastWheel > QUIET;
   const dt = fresh ? 1 / 60 : Math.min(now - G.lastWheel, 50) / 1000;
@@ -292,7 +292,7 @@ function onTrackpadWheel(e) {
   if ((dir > 0 && G.mpos >= idx) || (dir < 0 && G.mpos <= idx)) { G.mpos = idx; G.detent = { i: idx, dir, pull: 0, need: RELEASE_SAME, since: Infinity }; }
   G.goal = posToY(G.mpos); kick();
   // Kleiner Schubs, der zwischen zwei Stationen endet: nach der Pause gemächlich zur nächsten Station
-  if (!G.detent) G.settle = setTimeout(() => { if (!G.detent && G.goal !== null) { G.mpos = idx; goTo(idx, .16); } }, QUIET + 40);
+  if (!G.detent) G.settle = setTimeout(() => { if (!G.detent && G.goal !== null) { G.mpos = idx; goTo(idx, .12); } }, QUIET + 40);
 }
 
 // ---------- Touch, Tastatur, Scrollleiste: nativ scrollen, danach einrasten ----------
