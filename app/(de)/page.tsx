@@ -131,6 +131,15 @@ export default function Home() {
           Bei bestehenden Websites prüfe ich zuerst Technik und Zugänge. Umfang, Preis und Termin
           stimmen wir vor der Umsetzung ab.
         </p>
+        <p className="text-muted mt-3 text-sm">
+          Betrieb aus Lügde oder Umgebung?{" "}
+          <Link
+            href="/webdesign-luegde/"
+            className="text-fg hover:text-accent underline underline-offset-4"
+          >
+            Website, Pflege und Google-Profil aus der Region →
+          </Link>
+        </p>
       </section>
 
       <section

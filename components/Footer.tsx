@@ -20,6 +20,11 @@ export function Footer({ locale }: { locale: "de" | "en" }) {
             {CONTACT_EMAIL}
           </a>
           <nav aria-label={locale === "en" ? "Legal information" : "Rechtliche Informationen"} className="text-muted flex gap-5 text-xs">
+            {locale === "de" && (
+              <Link href="/webdesign-luegde/" className="hover:text-fg py-2">
+                Webdesign Lügde
+              </Link>
+            )}
             <Link href={`${base}impressum/`} className="hover:text-fg py-2">
               {locale === "en" ? "Legal notice" : "Impressum"}
             </Link>

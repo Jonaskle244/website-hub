@@ -8,6 +8,8 @@ export function LanguageSwitch({ locale }: { locale: "de" | "en" }) {
   if (pathname.startsWith("/lab/")) return null;
   // Das Agentur-Angebot gibt es nur auf Deutsch.
   if (pathname.startsWith("/agenturen")) return null;
+  // Die Seite für Betriebe aus der Region gibt es nur auf Deutsch.
+  if (pathname.startsWith("/webdesign-luegde")) return null;
   const other = locale === "de" ? "en" : "de";
   const target = locale === "de" ? `/en${pathname === "/" ? "/" : pathname}` : pathname.replace(/^\/en(?=\/|$)/, "") || "/";
 
